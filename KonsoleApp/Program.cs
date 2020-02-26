@@ -25,9 +25,9 @@ namespace KonsoleApp
                 WriteIndented = true
             };
 
-            var builder = new DictionaryConverterFactoryBuilder();
+            var builder = new DictionaryJsonConverterFactoryBuilder();
 
-            options.Converters.Add(DictionaryConverterFactory.Default);
+            options.Converters.Add(DictionaryJsonConverterFactory.Default);
 
             var d = JsonSerializer.Deserialize<ImmutableSortedDictionary<Guid, int>>("{\"49fc2162-744a-4a42-b685-ea1e30ce2a2f\": 99}", options);
 
