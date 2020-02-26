@@ -17,6 +17,12 @@ namespace KellySharp
             return this;
         }
 
+        public DictionaryJsonConverterFactoryBuilder SetParser<T>(Converter<string, T> parser)
+        {
+            _parsers[typeof(T)] = parser;
+            return this;
+        }
+
         public DictionaryJsonConverterFactoryBuilder AddDefaultParsers()
         {
             return AddParser(s => s)
