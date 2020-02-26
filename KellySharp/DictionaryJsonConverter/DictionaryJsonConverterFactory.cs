@@ -32,7 +32,8 @@ namespace KellySharp
         {
             return
                 typeToConvert.IsGenericType &&
-                s_converterTypes.ContainsKey(typeToConvert.GetGenericTypeDefinition());
+                s_converterTypes.ContainsKey(typeToConvert.GetGenericTypeDefinition()) &&
+                _parsers.ContainsKey(typeToConvert.GenericTypeArguments[0]);
         }
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
@@ -41,11 +42,12 @@ namespace KellySharp
             var valueType = typeToConvert.GenericTypeArguments[1];
 
             var keyParser = _parsers[keyType];
+            var valueConverter = options.GetConverter(valueType);
             var converterType = s_converterTypes[typeToConvert.GetGenericTypeDefinition()];
             var result = Activator.CreateInstance(
                 converterType.MakeGenericType(typeToConvert.GenericTypeArguments),
                 keyParser,
-                options.GetConverter(valueType)) ?? throw new NullReferenceException("Failed to create converter");
+                valueConverter) ?? throw new NullReferenceException("Failed to create converter");
             
             return (JsonConverter)result;
         }
