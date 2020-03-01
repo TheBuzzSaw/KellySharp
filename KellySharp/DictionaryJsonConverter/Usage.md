@@ -44,7 +44,7 @@ The default JSON converter factory adds support for many basic .NET types, but t
 
 ```C#
 var factory = new DictionaryJsonConverterFactoryBuilder()
-    .AddDefaultParsers() // Add support for the basic types listed above.
+    .AddDefaults() // Add support for the basic types listed above.
     .AddParser(MyCustomType.Parse) // Specify the method that will accept a string and return your type.
     .AddParser(SomeOtherType.Parse) // Chain the calls together!
     .Build(); // Build the actual factory.

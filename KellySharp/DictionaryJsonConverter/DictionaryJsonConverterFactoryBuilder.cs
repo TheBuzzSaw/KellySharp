@@ -10,10 +10,17 @@ namespace KellySharp
     public class DictionaryJsonConverterFactoryBuilder
     {
         private readonly Dictionary<Type, Delegate> _parsers = new Dictionary<Type, Delegate>();
+        private readonly Dictionary<Type, Delegate> _serializers = new Dictionary<Type, Delegate>();
 
         public DictionaryJsonConverterFactoryBuilder AddParser<T>(Converter<string, T> parser)
         {
             _parsers.Add(typeof(T), parser);
+            return this;
+        }
+
+        public DictionaryJsonConverterFactoryBuilder AddSerializer<T>(Converter<T, string> serializer)
+        {
+            _serializers.Add(typeof(T), serializer);
             return this;
         }
 
@@ -23,9 +30,16 @@ namespace KellySharp
             return this;
         }
 
-        public DictionaryJsonConverterFactoryBuilder AddDefaultParsers()
+        public DictionaryJsonConverterFactoryBuilder SetSerializer<T>(Converter<T, string> serializer)
         {
-            return AddParser(s => s)
+            _serializers[typeof(T)] = serializer;
+            return this;
+        }
+
+        public DictionaryJsonConverterFactoryBuilder AddDefaults()
+        {
+            return AddSerializer((string s) => s)
+                .AddParser(s => s)
                 .AddParser(sbyte.Parse)
                 .AddParser(short.Parse)
                 .AddParser(int.Parse)
@@ -44,7 +58,8 @@ namespace KellySharp
         public DictionaryJsonConverterFactory Build()
         {
             return new DictionaryJsonConverterFactory(
-                _parsers.ToImmutableDictionary());
+                _parsers.ToImmutableDictionary(),
+                _serializers.ToImmutableDictionary());
         }
     }
 }

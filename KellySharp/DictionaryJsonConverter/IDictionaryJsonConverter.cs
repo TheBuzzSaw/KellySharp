@@ -10,13 +10,16 @@ namespace KellySharp
     public class IDictionaryJsonConverter<TKey, TValue> : JsonConverter<IDictionary<TKey, TValue>?> where TKey : notnull
     {
         private readonly Converter<string, TKey> _keyParser;
+        private readonly Converter<TKey, string> _keySerializer;
         private readonly JsonConverter<TValue> _valueConverter;
 
         public IDictionaryJsonConverter(
             Converter<string, TKey> keyParser,
+            Converter<TKey, string> keySerializer,
             JsonConverter<TValue> valueConverter)
         {
             _keyParser = keyParser;
+            _keySerializer = keySerializer;
             _valueConverter = valueConverter;
         }
 
@@ -67,7 +70,7 @@ namespace KellySharp
 
                 foreach (var pair in value)
                 {
-                    writer.WritePropertyName(pair.Key.ToString());
+                    writer.WritePropertyName(_keySerializer(pair.Key));
                     _valueConverter.Write(writer, pair.Value, options);
                 }
 
