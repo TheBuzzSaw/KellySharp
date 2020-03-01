@@ -47,6 +47,7 @@ var factory = new DictionaryJsonConverterFactoryBuilder()
     .AddDefaults() // Add support for the basic types listed above.
     .AddParser(MyCustomType.Parse) // Specify the method that will accept a string and return your type.
     .AddParser(SomeOtherType.Parse) // Chain the calls together!
+    .AddSerializer((SomeOtherType sot) => sot.ToString(formatSettings, moreFormatSettings)) // Override the other direction.
     .Build(); // Build the actual factory.
 
 var options = new JsonSerializerOptions();
