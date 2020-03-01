@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using KellySharp;
 
@@ -12,6 +13,11 @@ namespace KonsoleApp
     {
         static async Task Main(string[] args)
         {
+            var semaphore = new SemaphoreSlim(1);
+            // using (await AutoSemaphore.WaitAsync(semaphore));
+            
+            // using new Disposable<string>("Farewell", Console.WriteLine);
+            // using var disposable = Disposable.Create("Goodbye", Console.WriteLine);
             var dictionary = new Dictionary<Guid, string>();
 
             for (int i = 0; i < 8; ++i)
