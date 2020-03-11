@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "KellySharp"
+		},
+		{
+			"path": "KellyTest"
 		}
 	],
 	"settings": {}
