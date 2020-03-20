@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KellySharp
 {
@@ -55,6 +56,13 @@ namespace KellySharp
         {
             _main = new Dictionary<TKey, TValue>();
             _reverse = new Dictionary<TValue, TKey>();
+            Reverse = new TwoWayDictionary<TValue, TKey>(this);
+        }
+
+        public TwoWayDictionary(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+        {
+            _main = new Dictionary<TKey, TValue>(pairs);
+            _reverse = new Dictionary<TValue, TKey>(_main.Select(pair => KeyValuePair.Create(pair.Value, pair.Key)));
             Reverse = new TwoWayDictionary<TValue, TKey>(this);
         }
 
