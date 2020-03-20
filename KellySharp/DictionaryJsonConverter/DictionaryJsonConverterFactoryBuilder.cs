@@ -24,6 +24,12 @@ namespace KellySharp
             return this;
         }
 
+        public DictionaryJsonConverterFactoryBuilder Add<T>(
+            Converter<string, T> parser, Converter<T, string> serializer)
+        {
+            return AddParser(parser).AddSerializer(serializer);
+        }
+
         public DictionaryJsonConverterFactoryBuilder SetParser<T>(Converter<string, T> parser)
         {
             _parsers[typeof(T)] = parser;
@@ -36,10 +42,15 @@ namespace KellySharp
             return this;
         }
 
+        public DictionaryJsonConverterFactoryBuilder Set<T>(
+            Converter<string, T> parser, Converter<T, string> serializer)
+        {
+            return SetParser(parser).SetSerializer(serializer);
+        }
+
         public DictionaryJsonConverterFactoryBuilder AddDefaults()
         {
-            return AddSerializer((string s) => s)
-                .AddParser(s => s)
+            return this
                 .AddParser(sbyte.Parse)
                 .AddParser(short.Parse)
                 .AddParser(int.Parse)
