@@ -16,8 +16,8 @@ namespace KellyTest
             Assert.True(dictionary.ContainsValue(2));
             Assert.False(dictionary.ContainsKey(2));
             Assert.False(dictionary.ContainsValue(1));
-            Assert.Equal(dictionary[1], 2);
-            Assert.Equal(dictionary.Reverse[2], 1);
+            Assert.Equal(2, dictionary[1]);
+            Assert.Equal(1, dictionary.Reverse[2]);
         }
     }
 }
