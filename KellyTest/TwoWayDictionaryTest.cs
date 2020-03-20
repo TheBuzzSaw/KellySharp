@@ -7,7 +7,7 @@ namespace KellyTest
     public class TwoWayDictionaryTest
     {
         [Fact]
-        public void Test1()
+        public void EnsureBothDirections()
         {
             var dictionary = new TwoWayDictionary<int, int>();
             dictionary.Add(1, 2);

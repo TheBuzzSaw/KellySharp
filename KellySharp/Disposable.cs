@@ -16,9 +16,15 @@ namespace KellySharp
         public void Dispose() => _action(_data);
     }
 
-    public static class Disposable
+    public readonly struct Disposable : IDisposable
     {
         public static Disposable<T> Create<T>(T data, Action<T> action) =>
             new Disposable<T>(data, action);
+
+        private readonly Action _action;
+
+        public Disposable(Action action) => _action = action;
+
+        public void Dispose() => _action();
     }
 }
