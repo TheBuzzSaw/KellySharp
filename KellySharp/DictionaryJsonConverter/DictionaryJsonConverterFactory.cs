@@ -16,6 +16,7 @@ namespace KellySharp
         private static readonly ImmutableDictionary<Type, Type> s_converterTypes = new Dictionary<Type, Type>
         {
             [typeof(IDictionary<,>)] = typeof(IDictionaryJsonConverter<,>),
+            [typeof(IReadOnlyDictionary<,>)] = typeof(IReadOnlyDictionaryJsonConverter<,>),
             [typeof(Dictionary<,>)] = typeof(DictionaryJsonConverter<,>),
             [typeof(SortedDictionary<,>)] = typeof(SortedDictionaryJsonConverter<,>),
             [typeof(ImmutableDictionary<,>)] = typeof(ImmutableDictionaryJsonConverter<,>),

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using KellySharp;
@@ -30,6 +31,24 @@ namespace KonsoleApp
             {
                 WriteIndented = true
             };
+
+            var intConverter = (JsonConverter<int>)options.GetConverter(typeof(int));
+
+            var types = new Type[]
+            {
+                typeof(int),
+                typeof(long),
+                typeof(decimal),
+                typeof(string),
+                typeof(DateTime)
+            };
+
+            foreach (var type in types)
+            {
+                var converter = options.GetConverter(type);
+
+                Console.WriteLine($"{type} -- {converter}");
+            }
 
             var builder = new DictionaryJsonConverterFactoryBuilder();
 

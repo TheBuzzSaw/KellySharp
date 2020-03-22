@@ -7,7 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace KellySharp
 {
-    public class SortedDictionaryJsonConverter<TKey, TValue> : JsonConverter<SortedDictionary<TKey, TValue>?> where TKey : notnull
+    public class SortedDictionaryJsonConverter<TKey, TValue> :
+        JsonConverter<SortedDictionary<TKey, TValue>?> where TKey : notnull
     {
         private readonly Converter<string, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;

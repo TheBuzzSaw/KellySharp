@@ -7,8 +7,42 @@ using System.Text.Json.Serialization;
 
 namespace KellySharp
 {
-    public class DictionaryJsonConverter<TKey, TValue> : JsonConverter<Dictionary<TKey, TValue>?> where TKey : notnull
+    public class DictionaryJsonConverter<TKey, TValue> :
+        JsonConverter<Dictionary<TKey, TValue>?> where TKey : notnull
     {
+        public static Dictionary<TKey, TValue>? Read(
+            ref Utf8JsonReader reader,
+            Converter<string, TKey> keyParser,
+            JsonConverter<TValue> valueConverter,
+            JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+                return null;
+            
+            if (reader.TokenType != JsonTokenType.StartObject)
+                throw new JsonException("Dictionary must be JSON object.");
+            
+            var result = new Dictionary<TKey, TValue>();
+            
+            while (true)
+            {
+                if (!reader.Read())
+                    throw new JsonException("Incomplete JSON object");
+                
+                if (reader.TokenType == JsonTokenType.EndObject)
+                    return result;
+
+                var key = keyParser(reader.GetString());
+
+                if (!reader.Read())
+                    throw new JsonException("Incomplete JSON object");
+
+                var value = valueConverter.Read(ref reader, typeof(TValue), options);
+
+                result.Add(key, value);
+            }
+        }
+
         private readonly Converter<string, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
         private readonly JsonConverter<TValue> _valueConverter;
@@ -28,31 +62,7 @@ namespace KellySharp
             Type typeToConvert,
             JsonSerializerOptions options)
         {   
-            if (reader.TokenType == JsonTokenType.Null)
-                return null;
-            
-            if (reader.TokenType != JsonTokenType.StartObject)
-                throw new JsonException("Dictionary must be JSON object.");
-            
-            var result = new Dictionary<TKey, TValue>();
-            
-            while (true)
-            {
-                if (!reader.Read())
-                    throw new JsonException("Incomplete JSON object");
-                
-                if (reader.TokenType == JsonTokenType.EndObject)
-                    return result;
-
-                var key = _keyParser(reader.GetString());
-
-                if (!reader.Read())
-                    throw new JsonException("Incomplete JSON object");
-
-                var value = _valueConverter.Read(ref reader, typeof(TValue), options);
-
-                result.Add(key, value);
-            }
+            return Read(ref reader, _keyParser, _valueConverter, options);
         }
 
         public override void Write(

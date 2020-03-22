@@ -7,25 +7,13 @@ using System.Text.Json.Serialization;
 
 namespace KellySharp
 {
-    public class ImmutableDictionaryJsonConverter<TKey, TValue> : JsonConverter<ImmutableDictionary<TKey, TValue>?> where TKey : notnull
+    public class ImmutableDictionaryJsonConverter<TKey, TValue> :
+        JsonConverter<ImmutableDictionary<TKey, TValue>?> where TKey : notnull
     {
-        private readonly Converter<string, TKey> _keyParser;
-        private readonly Converter<TKey, string> _keySerializer;
-        private readonly JsonConverter<TValue> _valueConverter;
-
-        public ImmutableDictionaryJsonConverter(
-            Converter<string, TKey> keyParser,
-            Converter<TKey, string> keySerializer,
-            JsonConverter<TValue> valueConverter)
-        {
-            _keyParser = keyParser;
-            _keySerializer = keySerializer;
-            _valueConverter = valueConverter;
-        }
-
-        public override ImmutableDictionary<TKey, TValue>? Read(
+        public static ImmutableDictionary<TKey, TValue>? Read(
             ref Utf8JsonReader reader,
-            Type typeToConvert,
+            Converter<string, TKey> keyParser,
+            JsonConverter<TValue> valueConverter,
             JsonSerializerOptions options)
         {   
             if (reader.TokenType == JsonTokenType.Null)
@@ -44,15 +32,37 @@ namespace KellySharp
                 if (reader.TokenType == JsonTokenType.EndObject)
                     return result.ToImmutable();
 
-                var key = _keyParser(reader.GetString());
+                var key = keyParser(reader.GetString());
 
                 if (!reader.Read())
                     throw new JsonException("Incomplete JSON object");
 
-                var value = _valueConverter.Read(ref reader, typeof(TValue), options);
+                var value = valueConverter.Read(ref reader, typeof(TValue), options);
 
                 result.Add(key, value);
             }
+        }
+
+        private readonly Converter<string, TKey> _keyParser;
+        private readonly Converter<TKey, string> _keySerializer;
+        private readonly JsonConverter<TValue> _valueConverter;
+
+        public ImmutableDictionaryJsonConverter(
+            Converter<string, TKey> keyParser,
+            Converter<TKey, string> keySerializer,
+            JsonConverter<TValue> valueConverter)
+        {
+            _keyParser = keyParser;
+            _keySerializer = keySerializer;
+            _valueConverter = valueConverter;
+        }
+
+        public override ImmutableDictionary<TKey, TValue>? Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options)
+        {
+            return Read(ref reader, _keyParser, _valueConverter, options);
         }
 
         public override void Write(

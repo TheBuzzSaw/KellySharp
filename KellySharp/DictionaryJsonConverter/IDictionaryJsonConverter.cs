@@ -7,7 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace KellySharp
 {
-    public class IDictionaryJsonConverter<TKey, TValue> : JsonConverter<IDictionary<TKey, TValue>?> where TKey : notnull
+    public class IDictionaryJsonConverter<TKey, TValue> :
+        JsonConverter<IDictionary<TKey, TValue>?> where TKey : notnull
     {
         private readonly Converter<string, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
@@ -27,32 +28,9 @@ namespace KellySharp
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options)
-        {   
-            if (reader.TokenType == JsonTokenType.Null)
-                return null;
-            
-            if (reader.TokenType != JsonTokenType.StartObject)
-                throw new JsonException("Dictionary must be JSON object.");
-            
-            var result = new Dictionary<TKey, TValue>();
-            
-            while (true)
-            {
-                if (!reader.Read())
-                    throw new JsonException("Incomplete JSON object");
-                
-                if (reader.TokenType == JsonTokenType.EndObject)
-                    return result;
-
-                var key = _keyParser(reader.GetString());
-
-                if (!reader.Read())
-                    throw new JsonException("Incomplete JSON object");
-
-                var value = _valueConverter.Read(ref reader, typeof(TValue), options);
-
-                result.Add(key, value);
-            }
+        {
+            return DictionaryJsonConverter<TKey, TValue>.Read(
+                ref reader, _keyParser, _valueConverter, options);
         }
 
         public override void Write(
