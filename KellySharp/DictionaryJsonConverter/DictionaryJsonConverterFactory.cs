@@ -10,9 +10,6 @@ namespace KellySharp
 {
     public sealed class DictionaryJsonConverterFactory : JsonConverterFactory
     {
-        public static readonly DictionaryJsonConverterFactory Default =
-            new DictionaryJsonConverterFactoryBuilder().AddDefaults().Build();
-
         private static readonly ImmutableDictionary<Type, Type> s_converterTypes = new Dictionary<Type, Type>
         {
             [typeof(IDictionary<,>)] = typeof(IDictionaryJsonConverter<,>),
@@ -22,6 +19,10 @@ namespace KellySharp
             [typeof(ImmutableDictionary<,>)] = typeof(ImmutableDictionaryJsonConverter<,>),
             [typeof(ImmutableSortedDictionary<,>)] = typeof(ImmutableSortedDictionaryJsonConverter<,>)
         }.ToImmutableDictionary();
+
+        public static readonly ImmutableArray<Type> SupportedDictionaryTypes = s_converterTypes.Keys.ToImmutableArray();
+        public static readonly DictionaryJsonConverterFactory Default =
+            new DictionaryJsonConverterFactoryBuilder().AddDefaults().Build();
 
         private readonly ImmutableDictionary<Type, Delegate> _parsers;
         private readonly ImmutableDictionary<Type, Delegate> _serializers;

@@ -8,6 +8,36 @@ namespace KellyTest
 {
     public class DictionaryJsonConverterTest
     {
+        private static Type CreateNestedDictionaryType(Type keyType, Type valueType)
+        {
+            var types = DictionaryJsonConverterFactory.SupportedDictionaryTypes;
+            var type = types[0].MakeGenericType(keyType, valueType);
+
+            for (int i = 1; i < types.Length; ++i)
+                type = types[i].MakeGenericType(keyType, type);
+            
+            // Ensure that the outermost type can be default constructed.
+            type = typeof(Dictionary<,>).MakeGenericType(keyType, type);
+            
+            return type;
+        }
+
+        [Fact]
+        public void BuildAllSerializers()
+        {
+            var type = CreateNestedDictionaryType(typeof(Guid), typeof(int));
+            
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(DictionaryJsonConverterFactory.Default);
+
+            // Verify that these custom tools are necessary!
+            var instance = Activator.CreateInstance(type);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Serialize(instance, type));
+
+            var serialized = JsonSerializer.Serialize(instance, type, options);
+            Assert.Equal("{}", serialized);
+        }
+
         [Fact]
         public void EnsureStringKeysWork()
         {
