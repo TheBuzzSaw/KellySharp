@@ -4,12 +4,12 @@ namespace KellySharp
 {
     public static class Base64
     {
-        private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        private const string Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         public static string Encode(ReadOnlySpan<byte> bytes) => Encode(bytes, Chars);
         public static string Encode(ReadOnlySpan<byte> bytes, ReadOnlySpan<char> characters)
         {
-            if (characters.Length < 64)
-                throw new ArgumentException("Must supply at least 64 characters.", nameof(characters));
+            if (characters.Length < 65)
+                throw new ArgumentException("Must supply at least 65 characters.", nameof(characters));
             
             if (bytes.IsEmpty)
                 return string.Empty;
@@ -54,7 +54,7 @@ namespace KellySharp
             }
 
             while (resultIndex < result.Length)
-                result[resultIndex++] = '=';
+                result[resultIndex++] = characters[64];
 
             return new string(result);
         }
