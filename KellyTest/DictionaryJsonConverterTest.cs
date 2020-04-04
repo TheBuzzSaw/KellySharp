@@ -32,6 +32,7 @@ namespace KellyTest
 
             // Verify that these custom tools are necessary!
             var instance = Activator.CreateInstance(type);
+            Assert.NotNull(instance);
             Assert.Throws<NotSupportedException>(() => JsonSerializer.Serialize(instance, type));
 
             var serialized = JsonSerializer.Serialize(instance, type, options);

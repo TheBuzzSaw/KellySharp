@@ -14,6 +14,23 @@ namespace KonsoleApp
     {
         static async Task Main(string[] args)
         {
+            var random = new Random();
+            Console.WriteLine(Convert.ToBase64String(new byte[]{11}));
+
+            for (int i = 0; i < 16; ++i)
+            {
+                var bytes = new byte[random.Next(32)];
+                random.NextBytes(bytes);
+
+                var a = Convert.ToBase64String(bytes);
+                var b = Base64.Encode(bytes);
+                var pass = a == b;
+                Console.WriteLine($"{pass} -- [{a}] vs [{b}]");
+            }
+        }
+        
+        static async Task Main2(string[] args)
+        {
             var semaphore = new SemaphoreSlim(1);
             // using (await AutoSemaphore.WaitAsync(semaphore));
             
