@@ -12,10 +12,22 @@ namespace KonsoleApp
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             var random = new Random();
             Console.WriteLine(Convert.ToBase64String(new byte[]{11}));
+
+            var aa = new byte[] { 0xff };
+            var bb = new byte[] { 0xff, 0x80 };
+            var cc = new byte[] { 0xff, 0x80, 0 };
+
+            Console.WriteLine(Convert.ToBase64String(aa));
+            Console.WriteLine(Convert.ToBase64String(bb));
+            Console.WriteLine(Convert.ToBase64String(cc));  
+
+            Console.WriteLine(Base64.Encode(aa));
+            Console.WriteLine(Base64.Encode(bb));
+            Console.WriteLine(Base64.Encode(cc));
 
             for (int i = 0; i < 16; ++i)
             {

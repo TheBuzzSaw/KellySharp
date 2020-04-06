@@ -9,7 +9,7 @@ namespace KellySharp
         public static string Encode(ReadOnlySpan<byte> bytes, ReadOnlySpan<char> characters)
         {
             if (characters.Length < 65)
-                throw new ArgumentException("Must supply at least 65 characters.", nameof(characters));
+                throw new ArgumentException("Must supply 65 characters.", nameof(characters));
             
             if (bytes.IsEmpty)
                 return string.Empty;
