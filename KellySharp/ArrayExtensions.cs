@@ -24,7 +24,7 @@ namespace KellySharp
 
         public static void Rotate<T>(this Span<T> span, int count)
         {
-            if (span.IsEmpty || span.Length < 2)
+            if (span.Length < 2)
             {
                 return;
             }
@@ -36,7 +36,7 @@ namespace KellySharp
                 count %= span.Length;
                 
                 if (0 < count)
-                    RotateRight(span, count % span.Length);
+                    RotateRight(span, count);
             }
         }
 
@@ -56,6 +56,10 @@ namespace KellySharp
         {
             int lastIndex = span.Length - 1;
             int baseIndex = 0;
+
+            // Skip initial values that already qualify.
+            while (baseIndex < lastIndex && predicate.Invoke(span[baseIndex]))
+                ++baseIndex;
 
             while (baseIndex < lastIndex)
             {
