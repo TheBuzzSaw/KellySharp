@@ -71,10 +71,7 @@ namespace KellySharp
                 
                 int matchCount = end - begin;
                 int length = end - baseIndex;
-                
-                if (0 < matchCount)
-                    RotateRight(span.Slice(baseIndex, length), matchCount);
-                
+                RotateRight(span.Slice(baseIndex, length), matchCount);
                 baseIndex += matchCount;
             }
         }
