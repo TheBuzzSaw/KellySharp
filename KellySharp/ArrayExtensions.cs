@@ -70,7 +70,7 @@ namespace KellySharp
                 
                 int end = begin + 1; // Exclusive index
 
-                while (end < lastIndex && predicate.Invoke(span[end]))
+                while (end < span.Length && predicate.Invoke(span[end]))
                     ++end;
                 
                 int matchCount = end - begin;
