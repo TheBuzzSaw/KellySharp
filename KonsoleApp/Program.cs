@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -13,6 +14,24 @@ namespace KonsoleApp
     class Program
     {
         static void Main(string[] args)
+        {
+            var values = new int[16];
+
+            for (int i = 0; i < values.Length; ++i)
+                values[i] = i;
+            
+            void Dump() => Console.WriteLine(string.Join(", ", values.Select(v => v.ToString())));
+            
+            Dump();
+            values.AsSpan().Rotate(2);
+            Dump();
+            values.AsSpan().Rotate(-2);
+            Dump();
+            values.AsSpan().StablePartition(n => (n & 1) == 1);
+            Dump();
+        }
+        
+        static void Main3(string[] args)
         {
             var random = new Random();
             Console.WriteLine(Convert.ToBase64String(new byte[]{11}));
