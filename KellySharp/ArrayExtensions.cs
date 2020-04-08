@@ -17,22 +17,9 @@ namespace KellySharp
         
         private static void RotateRight<T>(this Span<T> span, int count)
         {
-            int inverseCount = span.Length - count;
-            int index = 0;
-            var value = span[index];
-
-            for (int i = 0; i < span.Length; ++i)
-            {
-                int nextIndex = index < inverseCount ?
-                    index + count :
-                    index - inverseCount;
-                
-                var nextValue = span[nextIndex];
-                span[nextIndex] = value;
-
-                index = nextIndex;
-                value = nextValue;
-            }
+            span.Reverse();
+            span.Slice(0, count).Reverse();
+            span.Slice(count).Reverse();
         }
 
         public static void Rotate<T>(this Span<T> span, int count)
@@ -50,6 +37,18 @@ namespace KellySharp
                 
                 if (0 < count)
                     RotateRight(span, count % span.Length);
+            }
+        }
+
+        public static void Reverse<T>(this Span<T> span)
+        {
+            var half = span.Length / 2;
+            for (int i = 0; i < half; ++i)
+            {
+                int ii = span.Length - 1 - i;
+                var swapValue = span[i];
+                span[i] = span[ii];
+                span[ii] = swapValue;
             }
         }
         
