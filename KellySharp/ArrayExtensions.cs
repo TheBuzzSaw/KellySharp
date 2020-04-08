@@ -62,26 +62,26 @@ namespace KellySharp
 
             while (baseIndex < lastIndex)
             {
-                int firstIndex = FindIndex(span, baseIndex, predicate);
+                int begin = FindIndex(span, baseIndex, predicate); // Inclusive index
                 
-                if (firstIndex == -1)
+                if (begin == -1)
                     break;
                 
-                int secondIndex = firstIndex;
+                int end = begin + 1; // Exclusive index
 
-                while (secondIndex < lastIndex && predicate.Invoke(span[secondIndex + 1]))
-                    ++secondIndex;
+                while (end < lastIndex && predicate.Invoke(span[end]))
+                    ++end;
                 
-                if (baseIndex < firstIndex)
+                if (baseIndex < begin)
                 {
-                    int matchCount = secondIndex - firstIndex + 1;
-                    int length = secondIndex - baseIndex + 1;
+                    int matchCount = end - begin;
+                    int length = end - baseIndex;
                     RotateRight(span.Slice(baseIndex, length), matchCount);
                     baseIndex += matchCount;
                 }
                 else
                 {
-                    baseIndex = secondIndex + 1;
+                    baseIndex = end;
                 }
             }
         }
