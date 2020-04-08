@@ -16,5 +16,12 @@ namespace KellyTest
             
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void SafeOnEmpty()
+        {
+            default(Span<int>).StablePartition(_ => true);
+            Array.Empty<int>().AsSpan().StablePartition(_ => true);
+        }
     }
 }

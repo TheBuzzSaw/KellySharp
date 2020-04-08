@@ -54,9 +54,6 @@ namespace KellySharp
         
         public static void StablePartition<T>(this Span<T> span, Predicate<T> predicate)
         {
-            if (span.Length < 2)
-                return;
-            
             int lastIndex = span.Length - 1;
             int baseIndex = 0;
 
@@ -72,17 +69,13 @@ namespace KellySharp
                 while (end < lastIndex && predicate.Invoke(span[end]))
                     ++end;
                 
-                if (baseIndex < begin)
-                {
-                    int matchCount = end - begin;
-                    int length = end - baseIndex;
+                int matchCount = end - begin;
+                int length = end - baseIndex;
+                
+                if (0 < matchCount)
                     RotateRight(span.Slice(baseIndex, length), matchCount);
-                    baseIndex += matchCount;
-                }
-                else
-                {
-                    baseIndex = end;
-                }
+                
+                baseIndex += matchCount;
             }
         }
     }
