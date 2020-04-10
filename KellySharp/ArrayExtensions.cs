@@ -14,8 +14,30 @@ namespace KellySharp
 
             return -1;
         }
+
+        public static void RotateViaCycle<T>(this Span<T> span, int k)
+        {
+            int count = 0;
+
+            for (int start = 0; count < span.Length; ++start)
+            {
+                int current = start;
+                var prev = span[start];
+
+                do
+                {
+                    int next = (current + k) % span.Length;
+                    var temp = span[next];
+                    span[next] = prev;
+                    prev = temp;
+                    current = next;
+                    ++count;
+                }
+                while (start != current);
+            }
+        }
         
-        private static void RotateRight<T>(this Span<T> span, int count)
+        public static void RotateRight<T>(this Span<T> span, int count)
         {
             span.Reverse();
             span.Slice(0, count).Reverse();

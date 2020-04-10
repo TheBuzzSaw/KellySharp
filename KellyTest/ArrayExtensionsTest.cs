@@ -6,6 +6,16 @@ namespace KellyTest
 {
     public class ArrayExtensionsTest
     {
+        private static int[] CreateArray(int n)
+        {
+            var result = new int[n];
+
+            for (int i = 0; i < result.Length; ++i)
+                result[i] = i;
+            
+            return result;
+        }
+
         [Fact]
         public void ShiftGroup()
         {
@@ -22,6 +32,21 @@ namespace KellyTest
         {
             default(Span<int>).StablePartition(_ => true);
             Array.Empty<int>().AsSpan().StablePartition(_ => true);
+        }
+
+        [Theory]
+        [InlineData(8, 1)]
+        [InlineData(8, 4)]
+        [InlineData(8, 7)]
+        public void Rotate(int n, int k)
+        {
+            var firstArray = CreateArray(n);
+            firstArray.AsSpan().RotateRight(k);
+
+            var secondArray = CreateArray(n);
+            secondArray.AsSpan().RotateViaCycle(k);
+
+            Assert.Equal(firstArray, secondArray);
         }
     }
 }
