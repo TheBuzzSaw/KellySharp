@@ -7,18 +7,6 @@ namespace KellyBenchmark
 {
     public class RotateBenchmark
     {
-        public static void Reverse<T>(Span<T> span)
-        {
-            var half = span.Length / 2;
-            for (int i = 0; i < half; ++i)
-            {
-                int ii = span.Length - 1 - i;
-                var swapValue = span[i];
-                span[i] = span[ii];
-                span[ii] = swapValue;
-            }
-        }
-
         public static void RotateViaReverse<T>(Span<T> span, int k)
         {
             span.Reverse();
