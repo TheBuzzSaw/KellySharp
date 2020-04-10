@@ -48,19 +48,32 @@ namespace KellyBenchmark
             }
         }
 
+        public static void RotateViaBuffer<T>(Span<T> span, int k)
+        {
+            var copy = span.ToArray();
+
+            for (int i = 0; i < span.Length; ++i)
+            {
+                int index = (k + i) % span.Length;
+                span[index] = copy[i];
+            }
+        }
+
         public static IEnumerable<RotateInput> Values()
         {
+            var mebi = 1 << 20;
+
             return new RotateInput[]
             {
                 new RotateInput(8, 1),
                 new RotateInput(8, 4),
                 new RotateInput(8, 7),
-                new RotateInput(128, 1),
-                new RotateInput(128, 64),
-                new RotateInput(128, 127),
                 new RotateInput(2048, 1),
                 new RotateInput(2048, 1024),
-                new RotateInput(2048, 2047)
+                new RotateInput(2048, 2047),
+                new RotateInput(mebi, 1),
+                new RotateInput(mebi, mebi / 2),
+                new RotateInput(mebi, mebi - 1)
             };
         }
         
@@ -91,6 +104,12 @@ namespace KellyBenchmark
         public void BenchmarkCycle()
         {
             RotateViaCycle(_data.AsSpan(), Input.K);
+        }
+
+        [Benchmark]
+        public void BenchmarkBuffer()
+        {
+            RotateViaBuffer(_data.AsSpan(), Input.K);
         }
     }
 }
