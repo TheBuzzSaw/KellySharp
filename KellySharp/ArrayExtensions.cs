@@ -52,10 +52,18 @@ namespace KellySharp
             }
             else
             {
-                while (count < 0)
-                    count += span.Length;
-                
-                count %= span.Length;
+                if (count < 0)
+                {
+                    do
+                    {
+                        count += span.Length;
+                    }
+                    while (count < 0);
+                }
+                else
+                {
+                    count %= span.Length;
+                }
                 
                 if (0 < count)
                     RotateRight(span, count);

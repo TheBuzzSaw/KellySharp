@@ -31,13 +31,13 @@ namespace KellySharp
         public static StatisticalReport<T> Create<T>(
             Converter<T, double> toDouble,
             Converter<double, T> fromDouble,
-            List<T> values)
+            List<T>? values)
         {
-            var doubles = values.ConvertAll(toDouble);
+            var doubles = values?.ConvertAll(toDouble);
             return Create(doubles).Convert(fromDouble);
         }
 
-        public static StatisticalReport<double> Create(List<double> values)
+        public static StatisticalReport<double> Create(List<double>? values)
         {
             if (values is null || values.Count == 0)
             {

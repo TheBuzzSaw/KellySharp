@@ -28,12 +28,12 @@ namespace KellySharp
                 bool hadOldValue = _main.Remove(key, out var oldValue);
                 
                 if (hadOldValue)
-                    _reverse.Remove(oldValue);
+                    _reverse.Remove(oldValue!);
                 
                 bool hadOldKey = _reverse.Remove(value, out var oldKey);
                 
                 if (hadOldKey)
-                    _main.Remove(oldKey);
+                    _main.Remove(oldKey!);
 
                 try
                 {
@@ -42,10 +42,10 @@ namespace KellySharp
                 catch
                 {
                     if (hadOldKey)
-                        Add(oldKey, value);
+                        Add(oldKey!, value);
                     
                     if (hadOldValue)
-                        Add(key, oldValue);
+                        Add(key, oldValue!);
                     
                     throw;
                 }
@@ -104,7 +104,7 @@ namespace KellySharp
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value) => _main.TryGetValue(key, out value);
+        public bool TryGetValue(TKey key, out TValue value) => _main.TryGetValue(key, out value!);
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
