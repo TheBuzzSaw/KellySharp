@@ -97,5 +97,22 @@ namespace KellySharp
                 baseIndex += matchCount;
             }
         }
+
+        public static T[] Without<T>(this T[] array, params T[] values)
+        {
+            Array.Sort(values);
+            var buffer = new T[array.Length];
+            int n = 0;
+
+            foreach (var item in array)
+            {
+                if (Array.BinarySearch(values, 0, values.Length, item) < 0)
+                    buffer[n++] = item;
+            }
+
+            var result = new T[n];
+            Array.Copy(buffer, result, n);
+            return result;
+        }
     }
 }
