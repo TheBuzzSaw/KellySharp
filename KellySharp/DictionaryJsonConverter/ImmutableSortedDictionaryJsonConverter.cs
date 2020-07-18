@@ -12,16 +12,13 @@ namespace KellySharp
     {
         private readonly Converter<string, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
-        private readonly JsonConverter<TValue> _valueConverter;
 
         public ImmutableSortedDictionaryJsonConverter(
             Converter<string, TKey> keyParser,
-            Converter<TKey, string> keySerializer,
-            JsonConverter<TValue> valueConverter)
+            Converter<TKey, string> keySerializer)
         {
             _keyParser = keyParser;
             _keySerializer = keySerializer;
-            _valueConverter = valueConverter;
         }
 
         public override ImmutableSortedDictionary<TKey, TValue>? Read(
@@ -50,7 +47,7 @@ namespace KellySharp
                 if (!reader.Read())
                     throw new JsonException("Incomplete JSON object");
 
-                var value = _valueConverter.Read(ref reader, typeof(TValue), options);
+                var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
 
                 result.Add(key, value);
             }
@@ -72,7 +69,7 @@ namespace KellySharp
                 foreach (var pair in value)
                 {
                     writer.WritePropertyName(_keySerializer(pair.Key));
-                    _valueConverter.Write(writer, pair.Value, options);
+                    JsonSerializer.Serialize(writer, pair.Value, options);
                 }
 
                 writer.WriteEndObject();

@@ -13,7 +13,6 @@ namespace KellySharp
         public static ImmutableDictionary<TKey, TValue>? Read(
             ref Utf8JsonReader reader,
             Converter<string, TKey> keyParser,
-            JsonConverter<TValue> valueConverter,
             JsonSerializerOptions options)
         {   
             if (reader.TokenType == JsonTokenType.Null)
@@ -37,7 +36,7 @@ namespace KellySharp
                 if (!reader.Read())
                     throw new JsonException("Incomplete JSON object");
 
-                var value = valueConverter.Read(ref reader, typeof(TValue), options);
+                var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
 
                 result.Add(key, value);
             }
@@ -45,16 +44,13 @@ namespace KellySharp
 
         private readonly Converter<string, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
-        private readonly JsonConverter<TValue> _valueConverter;
 
         public ImmutableDictionaryJsonConverter(
             Converter<string, TKey> keyParser,
-            Converter<TKey, string> keySerializer,
-            JsonConverter<TValue> valueConverter)
+            Converter<TKey, string> keySerializer)
         {
             _keyParser = keyParser;
             _keySerializer = keySerializer;
-            _valueConverter = valueConverter;
         }
 
         public override ImmutableDictionary<TKey, TValue>? Read(
@@ -62,7 +58,7 @@ namespace KellySharp
             Type typeToConvert,
             JsonSerializerOptions options)
         {
-            return Read(ref reader, _keyParser, _valueConverter, options);
+            return Read(ref reader, _keyParser, options);
         }
 
         public override void Write(
@@ -81,7 +77,7 @@ namespace KellySharp
                 foreach (var pair in value)
                 {
                     writer.WritePropertyName(_keySerializer(pair.Key));
-                    _valueConverter.Write(writer, pair.Value, options);
+                    JsonSerializer.Serialize(writer, pair.Value, options);
                 }
 
                 writer.WriteEndObject();

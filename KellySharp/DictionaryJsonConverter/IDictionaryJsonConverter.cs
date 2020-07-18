@@ -12,16 +12,13 @@ namespace KellySharp
     {
         private readonly Converter<string, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
-        private readonly JsonConverter<TValue> _valueConverter;
 
         public IDictionaryJsonConverter(
             Converter<string, TKey> keyParser,
-            Converter<TKey, string> keySerializer,
-            JsonConverter<TValue> valueConverter)
+            Converter<TKey, string> keySerializer)
         {
             _keyParser = keyParser;
             _keySerializer = keySerializer;
-            _valueConverter = valueConverter;
         }
 
         public override IDictionary<TKey, TValue>? Read(
@@ -30,7 +27,7 @@ namespace KellySharp
             JsonSerializerOptions options)
         {
             return DictionaryJsonConverter<TKey, TValue>.Read(
-                ref reader, _keyParser, _valueConverter, options);
+                ref reader, _keyParser, options);
         }
 
         public override void Write(
@@ -49,7 +46,7 @@ namespace KellySharp
                 foreach (var pair in value)
                 {
                     writer.WritePropertyName(_keySerializer(pair.Key));
-                    _valueConverter.Write(writer, pair.Value, options);
+                    JsonSerializer.Serialize(writer, pair.Value, options);
                 }
 
                 writer.WriteEndObject();

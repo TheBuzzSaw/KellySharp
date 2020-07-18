@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Numerics;
@@ -26,6 +27,9 @@ namespace KellySharp
 
         private readonly ImmutableDictionary<Type, Delegate> _parsers;
         private readonly ImmutableDictionary<Type, Delegate> _serializers;
+        private readonly Func<Type, JsonConverter> _valueFactory;
+        private readonly ConcurrentDictionary<Type, JsonConverter> _jsonConverterCache =
+            new ConcurrentDictionary<Type, JsonConverter>();
 
         internal DictionaryJsonConverterFactory(
             ImmutableDictionary<Type, Delegate> parsers,
@@ -33,6 +37,7 @@ namespace KellySharp
         {
             _parsers = parsers;
             _serializers = serializers;
+            _valueFactory = CreateConverter;
         }
 
         public override bool CanConvert(Type typeToConvert)
@@ -41,6 +46,11 @@ namespace KellySharp
                 typeToConvert.IsGenericType &&
                 s_converterTypes.ContainsKey(typeToConvert.GetGenericTypeDefinition()) &&
                 _parsers.ContainsKey(typeToConvert.GenericTypeArguments[0]);
+        }
+
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            return _jsonConverterCache.GetOrAdd(typeToConvert, _valueFactory);
         }
 
         private static Converter<T, string> MakeClassSerializer<T>() where T : class
@@ -53,7 +63,7 @@ namespace KellySharp
             return item => item.ToString() ?? string.Empty;
         }
 
-        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        private JsonConverter CreateConverter(Type typeToConvert)
         {
             var keyType = typeToConvert.GenericTypeArguments[0];
             var valueType = typeToConvert.GenericTypeArguments[1];
@@ -70,13 +80,11 @@ namespace KellySharp
                 keySerializer = (Delegate)obj;
             }
 
-            var valueConverter = options.GetConverter(valueType);
             var converterType = s_converterTypes[typeToConvert.GetGenericTypeDefinition()];
             var result = Activator.CreateInstance(
                 converterType.MakeGenericType(typeToConvert.GenericTypeArguments),
                 keyParser,
-                keySerializer,
-                valueConverter) ?? throw new NullReferenceException("Failed to create converter");
+                keySerializer) ?? throw new NullReferenceException("Failed to create converter");
             
             return (JsonConverter)result;
         }
