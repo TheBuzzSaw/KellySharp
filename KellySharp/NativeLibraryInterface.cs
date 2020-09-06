@@ -37,7 +37,7 @@ namespace KellySharp
         
         public static bool IsValid(IntPtr ptr)
         {
-            if (IntPtr.Size == 8)
+            if (Environment.Is64BitProcess)
             {
                 var value = ptr.ToInt64();
                 return value < -3 || 3 < value;
