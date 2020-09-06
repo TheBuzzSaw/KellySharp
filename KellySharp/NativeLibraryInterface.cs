@@ -35,7 +35,8 @@ namespace KellySharp
             MethodAttributes.NewSlot |
             MethodAttributes.Virtual;
         
-        public static bool IsValid(IntPtr ptr)
+        public static bool IsInvalid(this IntPtr ptr) => !ptr.IsValid();
+        public static bool IsValid(this IntPtr ptr)
         {
             if (Environment.Is64BitProcess)
             {
