@@ -16,17 +16,7 @@ namespace KellySharp.ActorModel
 
         public bool Equals(ActorReference other) => Index == other.Index && Generation == other.Generation;
         public override bool Equals(object? obj) => obj is ActorReference ar && Equals(ar);
-        public override int GetHashCode()
-        {
-            // https://stackoverflow.com/a/720282
-            unchecked
-            {
-                int hash = 27;
-                hash = (13 * hash) + Index;
-                hash = (13 * hash) + Generation;
-                return hash;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Index, Generation);
 
         // TODO: Obfuscate?
         public override string ToString() => $"{Index}-{Generation}";
