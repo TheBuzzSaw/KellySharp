@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -43,13 +44,13 @@ namespace KonsoleApp
 
         static void Main(string[] args)
         {
-            // Expression<Func<IWidget, int, int>> e = (w, i) => w.DoTheThing(i);
-            // Console.WriteLine(e);
-            // Console.WriteLine(e.Body);
-
-            DumpMethods(typeof(ISecondWidget));
-            DumpMethods(typeof(IDictionary<,>));
-            DumpMethods(typeof(IList<>));
+            var amount = -1234.566m;
+            Console.WriteLine(amount.ToString("C"));
+            Console.WriteLine(Money.GetString(long.MinValue));
+            Console.WriteLine(Money.GetString(long.MaxValue));
+            Console.WriteLine(Money.GetString(-1_001_12));
+            Console.WriteLine(Money.GetString(1_000_00));
+            Console.WriteLine(Money.GetString(999_99));
         }
     }
 }
