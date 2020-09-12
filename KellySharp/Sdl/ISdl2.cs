@@ -69,5 +69,11 @@ namespace KellySharp.Sdl
         int GlSetSwapInterval(int interval);
         int GlSetAttribute(int attribute, int value);
         void GlSwapWindow(IntPtr window);
+        
+        int VulkanCreateSurface(IntPtr window, IntPtr instance, IntPtr surface);
+        void VulkanGetDrawableSize(IntPtr window, out int w, out int h);
+        int VulkanGetInstanceExtensions(IntPtr window, out uint pCount, IntPtr pNames);
+        int VulkanLoadLibrary(string path);
+        void VulkanUnloadLibrary();
     }
 }
