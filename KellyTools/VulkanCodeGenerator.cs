@@ -113,6 +113,50 @@ namespace KellyTools
             writer.WriteLine();
         }
 
+        private static void GenerateStructMember(XmlReader reader, StreamWriter writer)
+        {
+            writer.Write("    public ");
+            while (reader.Read() && (reader.NodeType != XmlNodeType.EndElement || reader.Name != "member"))
+            {
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name == "comment")
+                    {
+                        reader.Read();
+                        reader.Read();
+                    }
+                }
+                else if (reader.NodeType == XmlNodeType.Whitespace)
+                {
+                    writer.Write(' ');
+                }
+                else if (reader.NodeType == XmlNodeType.Text)
+                {
+                    writer.Write(reader.Value);
+                }
+            }
+
+            writer.WriteLine(";");
+        }
+
+        private static void GenerateStruct(XmlReader reader, StreamWriter writer)
+        {
+            writer.WriteLine("[StructLayout(LayoutKind.Sequential)]");
+            writer.WriteLine("public struct " + reader.GetAttribute("name"));
+            writer.WriteLine("{");
+
+            while (reader.Read() && (reader.NodeType != XmlNodeType.EndElement || reader.Name != "type"))
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "member")
+                {
+                    GenerateStructMember(reader, writer);
+                }
+            }
+
+            writer.WriteLine("}");
+            writer.WriteLine();
+        }
+
         public static void GenerateCode()
         {
             Console.WriteLine("Generating code...");
@@ -137,6 +181,11 @@ namespace KellyTools
                                 GenerateConstants(reader, writer);
                             else
                                 GenerateEnum(reader, writer);
+                            break;
+                        
+                        case "type":
+                            if (reader.GetAttribute("category") == "struct")
+                                GenerateStruct(reader, writer);
                             break;
                         default: break;
                     }
