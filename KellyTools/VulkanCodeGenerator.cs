@@ -115,7 +115,9 @@ namespace KellyTools
 
         private static void GenerateStructMember(XmlReader reader, StreamWriter writer)
         {
-            writer.Write("    public ");
+            var comment = string.Empty;
+            var name = string.Empty;
+            var typeComponents = new List<string>();
             while (reader.Read() && (reader.NodeType != XmlNodeType.EndElement || reader.Name != "member"))
             {
                 if (reader.NodeType == XmlNodeType.Element)
@@ -123,20 +125,45 @@ namespace KellyTools
                     if (reader.Name == "comment")
                     {
                         reader.Read();
+                        comment = reader.Value;
+                        reader.Read();
+                    }
+                    else if (reader.Name == "name")
+                    {
+                        reader.Read();
+                        name = reader.Value;
                         reader.Read();
                     }
                 }
-                else if (reader.NodeType == XmlNodeType.Whitespace)
-                {
-                    writer.Write(' ');
-                }
                 else if (reader.NodeType == XmlNodeType.Text)
                 {
-                    writer.Write(reader.Value);
+                    var component = reader.Value.Trim();
+
+                    if (!string.IsNullOrEmpty(component))
+                        typeComponents.Add(component);
                 }
             }
 
-            writer.WriteLine(";");
+            var type = string.Join(' ', typeComponents);
+            var dotNetType = type switch
+            {
+                "size_t" => nameof(UIntPtr),
+                "VkBool32" => "int",
+                "int16_t" => "short",
+                "int32_t" => "int",
+                "int64_t" => "long",
+                "uint16_t" => "ushort",
+                "uint32_t" => "uint",
+                "uint64_t" => "ulong",
+                _ => type
+            };
+            
+            if (dotNetType.Contains('*') || dotNetType.StartsWith("PFN_"))
+                dotNetType = nameof(IntPtr);
+            
+            var commentPrefix = string.IsNullOrWhiteSpace(comment) ? string.Empty : " -- ";
+
+            writer.WriteLine($"    public {dotNetType} {name}; // {type}{commentPrefix}{comment}");
         }
 
         private static void GenerateStruct(XmlReader reader, StreamWriter writer)
