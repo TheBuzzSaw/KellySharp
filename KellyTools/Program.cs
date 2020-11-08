@@ -21,7 +21,8 @@ namespace KellyTools
                     await VulkanCodeGenerator.DownloadAsync(httpClient);
                 }
 
-                VulkanCodeGenerator.GenerateCode();
+                // VulkanCodeGenerator.GenerateCode();
+                var specification = VulkanSpecification.Create(VulkanCodeGenerator.VkXml);
             }
             catch (Exception ex)
             {

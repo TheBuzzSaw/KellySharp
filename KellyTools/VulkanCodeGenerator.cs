@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
@@ -14,7 +15,7 @@ namespace KellyTools
         public const string VkXml = "vk.xml";
         public const string VkXmlUrl = "https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/main/xml/vk.xml";
 
-        private static string ToPascalCase(string screamingSnakeCase)
+        public static string ToPascalCase(string screamingSnakeCase)
         {
             if (screamingSnakeCase is null)
             {
