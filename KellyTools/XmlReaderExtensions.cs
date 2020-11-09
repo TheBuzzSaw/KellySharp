@@ -13,6 +13,17 @@ namespace KellyTools
             return xmlReader;
         }
 
+        public static bool ReadNonWhitespace(this XmlReader xmlReader)
+        {
+            while (xmlReader.Read())
+            {
+                if (!xmlReader.NodeType.IsWhitespace())
+                    return true;
+            }
+
+            return false;
+        }
+
         public static string ReadText(this XmlReader xmlReader)
         {
             var result = default(string);
@@ -28,12 +39,14 @@ namespace KellyTools
             return result;
         }
 
+        public static bool IsWhitespace(this XmlNodeType xmlNodeType)
+        {
+            return xmlNodeType == XmlNodeType.Whitespace || xmlNodeType == XmlNodeType.SignificantWhitespace;
+        }
+
         public static bool IsText(this XmlNodeType xmlNodeType)
         {
-            return
-                xmlNodeType == XmlNodeType.Text ||
-                xmlNodeType == XmlNodeType.Whitespace ||
-                xmlNodeType == XmlNodeType.SignificantWhitespace;
+            return xmlNodeType == XmlNodeType.Text || xmlNodeType.IsWhitespace();
         }
     }
 }

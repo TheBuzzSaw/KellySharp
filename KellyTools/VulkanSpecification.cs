@@ -29,7 +29,55 @@ namespace KellyTools
                 ["size_t"] = nameof(UIntPtr)
             }.ToImmutableDictionary();
 
-        private static void ParseType(
+        private static void ParseStruct(
+            XmlReader xmlReader,
+            Dictionary<string, List<KeyValuePair<string, string>>> structs)
+        {
+            var structName = xmlReader.GetAttribute("name");
+            var members = new List<KeyValuePair<string, string>>();
+            var builder = new StringBuilder();
+
+            while (xmlReader.ReadNonWhitespace() && xmlReader.NodeType == XmlNodeType.Element)
+            {
+                if (xmlReader.Name == "member")
+                {
+                    var memberName = default(string);
+                    builder.Length = 0;
+                    
+                    while (xmlReader.Read())
+                    {
+                        if (xmlReader.NodeType == XmlNodeType.Element)
+                        {
+                            var name = xmlReader.Name;
+                            var text = xmlReader.ReadText();
+
+                            if (name == "name")
+                                memberName = text;
+                            
+                            builder.Append(text);
+                        }
+                        else if (xmlReader.NodeType.IsText())
+                        {
+                            builder.Append(xmlReader.Value);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    members.Add(KeyValuePair.Create(memberName, builder.ToString()));
+                }
+                else
+                {
+                    xmlReader.Skip();
+                }
+            }
+
+            structs.Add(structName, members);
+        }
+        
+        private static void ParseTypeDef(
             XmlReader xmlReader,
             Dictionary<string, string> typeDefs)
         {
@@ -66,7 +114,11 @@ namespace KellyTools
                 {
                     typeDefs.Add(typeName, nameof(IntPtr));
                 }
-                Console.WriteLine(typeDef);
+                else
+                {
+                    typeDefs.Add(typeName, typeDef);
+                }
+                // Console.WriteLine(typeDef);
             }
             else
             {
@@ -129,8 +181,9 @@ namespace KellyTools
             using var destinationStream = File.Create("vk.txt");
             using var writer = new StreamWriter(destinationStream);
 
-            var typeDefs = new Dictionary<string, string>();
             var constants = new Dictionary<string, string>();
+            var typeDefs = new Dictionary<string, string>();
+            var structs = new Dictionary<string, List<KeyValuePair<string, string>>>();
             var enums = new Dictionary<string, List<KeyValuePair<string, string>>>();
             var flagEnums = new Dictionary<string, List<KeyValuePair<string, string>>>();
 
@@ -141,7 +194,10 @@ namespace KellyTools
                     switch (xmlReader.Name)
                     {
                         case "type":
-                            ParseType(xmlReader, typeDefs);
+                            if (xmlReader.GetAttribute("category") == "struct")
+                                ParseStruct(xmlReader, structs);
+                            else
+                                ParseTypeDef(xmlReader, typeDefs);
                             break;
                         case "enums":
                             if (xmlReader.GetAttribute("name").Contains(' '))
