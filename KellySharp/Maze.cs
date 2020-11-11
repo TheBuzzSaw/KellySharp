@@ -16,6 +16,10 @@ namespace KellySharp
         public int Width { get; }
         public int Height { get; }
 
+        public Maze(int edge) : this(edge, edge)
+        {
+        }
+
         public Maze(int width, int height)
         {
             if (width < 1)
@@ -35,26 +39,45 @@ namespace KellySharp
             _walls = new BitArray(_verticalWallCount + _horizontalWallCount);
         }
 
-        private bool VerticalWallExists(int x, int y)
-        {
-            return _walls[_verticalWallWidth * y + x];
-        }
-
-        private bool HorizontalWallExists(int x, int y)
-        {
-            return _walls[_verticalWallCount + _horizontalWallWidth * y + x];
-        }
+        private int VerticalWallIndex(int x, int y) => _verticalWallWidth * y + x;
+        private int HorizontalWallIndex(int x, int y) => _verticalWallCount + _horizontalWallWidth * y + x;
 
         public bool CanGoDown(int x, int y) => CanGoUp(x, y + 1);
         public bool CanGoUp(int x, int y)
         {
-            return 0 <= x && x < Width && 0 < y && y < Height && !HorizontalWallExists(x, y - 1);
+            return 0 <= x && x < Width && 0 < y && y < Height && !_walls[HorizontalWallIndex(x, y - 1)];
         }
 
         public bool CanGoRight(int x, int y) => CanGoLeft(x + 1, y);
         public bool CanGoLeft(int x, int y)
         {
-            return 0 <= y && y < Height && 0 < x && x < Width && !VerticalWallExists(x - 1, y);
+            return 0 <= y && y < Height && 0 < x && x < Width && !_walls[VerticalWallIndex(x - 1, y)];
+        }
+
+        public void SetWallDown(int x, int y, bool wall) => SetWallUp(x, y + 1, wall);
+        public void SetWallUp(int x, int y, bool wall)
+        {
+            if (0 <= x && x < Width && 0 < y && y < Height)
+            {
+                _walls[HorizontalWallIndex(x, y - 1)] = wall;
+            }
+            else
+            {
+                throw new IndexOutOfRangeException();
+            }
+        }
+
+        public void SetWallRight(int x, int y, bool wall) => SetWallLeft(x + 1, y, wall);
+        public void SetWallLeft(int x, int y, bool wall)
+        {
+            if (0 <= y && y < Height && 0 < x && x < Width)
+            {
+                _walls[VerticalWallIndex(x - 1, y)] = wall;
+            }
+            else
+            {
+                throw new IndexOutOfRangeException();
+            }
         }
     }
 }
