@@ -8,7 +8,7 @@ namespace KellySharp
         public static TValue GetOrAdd<TKey, TValue>(
             this IDictionary<TKey, TValue> dictionary,
             TKey key,
-            TValue defaultValue = default)
+            TValue defaultValue)
             where TKey : notnull
         {
             if (!dictionary.TryGetValue(key, out var value))
