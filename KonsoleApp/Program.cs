@@ -1,23 +1,68 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 using KellySharp;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Bmp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace KonsoleApp
 {
     class Program
     {
+        static void GenerateImage(Maze maze, int cellSize, string path)
+        {
+            using var image = new Image<Rgba32>(
+                maze.Width * cellSize + 1,
+                maze.Height * cellSize + 1,
+                new Rgba32(255, 255, 255));
+            
+            var black = new Rgba32(0, 0, 0, 255);
+            var lastImageX = image.Width - 1;
+            var lastImageY = image.Height - 1;
+            
+            for (int y = 0; y < maze.Height; ++y)
+            {
+                var imageY = y * cellSize;
+                for (int x = 0; x < maze.Width; ++x)
+                {
+                    var imageX = x * cellSize;
+                    image[imageX, imageY] = black;
+
+                    if (!maze.CanGoUp(x, y))
+                    {
+                        for (int i = 1; i < cellSize; ++i)
+                            image[imageX + i, imageY] = black;
+                    }
+
+                    if (!maze.CanGoLeft(x, y))
+                    {
+                        for (int i = 1; i < cellSize; ++i)
+                            image[imageX, imageY + i] = black;
+                    }
+                }
+
+                for (int i = 0; i < cellSize; ++i)
+                    image[lastImageX, imageY + i] = black;
+            }
+
+            for (int i = 0; i < image.Width; ++i)
+                image[i, lastImageY] = black;
+            
+            // var encoder = new BmpEncoder
+            // {
+            //     BitsPerPixel = BmpBitsPerPixel.Pixel8
+            // };
+            // image.SaveAsBmp(path, encoder);
+            var encoder = new PngEncoder
+            {
+                BitDepth = PngBitDepth.Bit1
+            };
+
+            image.SaveAsPng("maze.png");
+        }
         static void OutputMaze(Maze maze)
         {
             for (int x = 0; x < maze.Width; ++x)
@@ -122,13 +167,16 @@ namespace KonsoleApp
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var maze = new Maze(16);
+                var maze = new Maze(32);
                 var random = new Random();
                 RandomizeMaze(maze, random);
 
                 Console.WriteLine($"Generated {maze.Width}x{maze.Height} maze in {stopwatch.Elapsed}.");
 
-                OutputMaze(maze);
+                // OutputMaze(maze);
+                stopwatch.Restart();
+                GenerateImage(maze, 4, "maze.bmp");
+                Console.WriteLine($"Generated image in {stopwatch.Elapsed}.");
             }
             catch (Exception ex)
             {
