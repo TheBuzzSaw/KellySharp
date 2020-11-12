@@ -61,7 +61,7 @@ namespace KonsoleApp
                 BitDepth = PngBitDepth.Bit1
             };
 
-            image.SaveAsPng("maze.png");
+            image.SaveAsPng(path);
         }
         static void OutputMaze(Maze maze)
         {
@@ -167,7 +167,7 @@ namespace KonsoleApp
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var maze = new Maze(32);
+                var maze = new Maze(256);
                 var random = new Random();
                 RandomizeMaze(maze, random);
 
@@ -175,7 +175,7 @@ namespace KonsoleApp
 
                 // OutputMaze(maze);
                 stopwatch.Restart();
-                GenerateImage(maze, 4, "maze.bmp");
+                GenerateImage(maze, 4, "maze.png");
                 Console.WriteLine($"Generated image in {stopwatch.Elapsed}.");
             }
             catch (Exception ex)
