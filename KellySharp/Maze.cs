@@ -79,5 +79,7 @@ namespace KellySharp
                 throw new IndexOutOfRangeException();
             }
         }
+
+        public void SetAllWalls(bool wall) => _walls.SetAll(wall);
     }
 }
