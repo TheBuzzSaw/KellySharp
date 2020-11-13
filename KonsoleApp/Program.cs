@@ -19,12 +19,12 @@ namespace KonsoleApp
             string path)
         {
             var cellSize = wallThickness + openSpace;
-            using var image = new Image<Rgba32>(
+            using var image = new Image<L8>(
                 maze.Width * cellSize + wallThickness,
                 maze.Height * cellSize + wallThickness,
-                new Rgba32(255, 255, 255));
+                new L8(255));
             
-            var black = new Rgba32(0, 0, 0, 255);
+            var black = new L8(0);
             var lastCellX = maze.Width * cellSize;
             var lastCellY = maze.Height * cellSize;
             var lastX = maze.Width - 1;
