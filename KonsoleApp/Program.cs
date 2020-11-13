@@ -12,16 +12,23 @@ namespace KonsoleApp
 {
     class Program
     {
-        static void GenerateImage(Maze maze, int cellSize, string path)
+        static void GenerateImage(
+            Maze maze,
+            int wallThickness,
+            int openSpace,
+            string path)
         {
+            var cellSize = wallThickness + openSpace;
             using var image = new Image<Rgba32>(
-                maze.Width * cellSize + 1,
-                maze.Height * cellSize + 1,
+                maze.Width * cellSize + wallThickness,
+                maze.Height * cellSize + wallThickness,
                 new Rgba32(255, 255, 255));
             
             var black = new Rgba32(0, 0, 0, 255);
-            var lastImageX = image.Width - 1;
-            var lastImageY = image.Height - 1;
+            var lastCellX = maze.Width * cellSize;
+            var lastCellY = maze.Height * cellSize;
+            var lastX = maze.Width - 1;
+            var lastY = maze.Height - 1;
             
             for (int y = 0; y < maze.Height; ++y)
             {
@@ -29,27 +36,64 @@ namespace KonsoleApp
                 for (int x = 0; x < maze.Width; ++x)
                 {
                     var imageX = x * cellSize;
-                    image[imageX, imageY] = black;
+                    image.PaintBox(
+                        imageX,
+                        imageY,
+                        wallThickness,
+                        wallThickness,
+                        black);
 
                     if (!maze.CanGoUp(x, y))
                     {
-                        for (int i = 1; i < cellSize; ++i)
-                            image[imageX + i, imageY] = black;
+                        image.PaintBox(
+                            imageX + wallThickness,
+                            imageY,
+                            openSpace,
+                            wallThickness,
+                            black);
                     }
 
                     if (!maze.CanGoLeft(x, y))
                     {
-                        for (int i = 1; i < cellSize; ++i)
-                            image[imageX, imageY + i] = black;
+                        image.PaintBox(
+                            imageX,
+                            imageY + wallThickness,
+                            wallThickness,
+                            openSpace,
+                            black);
                     }
                 }
 
-                for (int i = 0; i < cellSize; ++i)
-                    image[lastImageX, imageY + i] = black;
+                if (!maze.CanGoRight(lastX, y))
+                {
+                    image.PaintBox(
+                        lastCellX,
+                        imageY,
+                        wallThickness,
+                        cellSize,
+                        black);
+                }
             }
 
-            for (int i = 0; i < image.Width; ++i)
-                image[i, lastImageY] = black;
+            for (int x = 0; x < maze.Width; ++x)
+            {
+                if (!maze.CanGoDown(x, lastY))
+                {
+                    image.PaintBox(
+                        cellSize * x,
+                        lastCellY,
+                        cellSize,
+                        wallThickness,
+                        black);
+                }
+            }
+
+            image.PaintBox(
+                lastCellX,
+                lastCellY,
+                wallThickness,
+                wallThickness,
+                black);
             
             // var encoder = new BmpEncoder
             // {
@@ -167,7 +211,7 @@ namespace KonsoleApp
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var maze = new Maze(256);
+                var maze = new Maze(32);
                 var random = new Random();
                 RandomizeMaze(maze, random);
 
@@ -175,7 +219,7 @@ namespace KonsoleApp
 
                 // OutputMaze(maze);
                 stopwatch.Restart();
-                GenerateImage(maze, 4, "maze.png");
+                GenerateImage(maze, 8, 24, "maze.png");
                 Console.WriteLine($"Generated image in {stopwatch.Elapsed}.");
             }
             catch (Exception ex)
