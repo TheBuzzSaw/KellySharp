@@ -94,12 +94,7 @@ namespace KonsoleApp
                 wallThickness,
                 wallThickness,
                 black);
-            
-            // var encoder = new BmpEncoder
-            // {
-            //     BitsPerPixel = BmpBitsPerPixel.Pixel8
-            // };
-            // image.SaveAsBmp(path, encoder);
+                
             var encoder = new PngEncoder
             {
                 BitDepth = PngBitDepth.Bit1
@@ -140,17 +135,21 @@ namespace KonsoleApp
         {
             maze.SetAllWalls(true);
             var visited = new BitArray(maze.Width * maze.Height);
+
             int VisitedIndex(int x, int y) => y * maze.Width + x;
             bool WasVisited(int x, int y) => visited[VisitedIndex(x, y)];
             void Visit(int x, int y) => visited[VisitedIndex(x, y)] = true;
+
             var trail = new Stack<(int x, int y)>();
             var lastX = maze.Width - 1;
             var lastY = maze.Height - 1;
-            trail.Push((random.Next(maze.Width), random.Next(maze.Height)));
+            var randomX = random.Next(maze.Width);
+            var randomY = random.Next(maze.Height);
+            trail.Push((randomX, randomY));
+            Visit(randomX, randomY);
 
             while (trail.TryPop(out var position))
             {
-                Visit(position.x, position.y);
                 var nextPosition = position;
                 var direction = random.Next(4);
                 bool proceed = false;
@@ -202,6 +201,7 @@ namespace KonsoleApp
                 {
                     trail.Push(position);
                     trail.Push(nextPosition);
+                    Visit(nextPosition.x, nextPosition.y);
                 }
             }
         }
