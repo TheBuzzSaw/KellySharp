@@ -12,19 +12,19 @@ namespace KonsoleApp
 {
     class Program
     {
-        static void GenerateImage(
+        static void GenerateImages(
             Maze maze,
+            IDictionary<Point32, MazeEdge[]> edges,
             int wallThickness,
-            int openSpace,
-            string path)
+            int openSpace)
         {
             var cellSize = wallThickness + openSpace;
-            using var image = new Image<L8>(
+            using var image = new Image<Rgb24>(
                 maze.Width * cellSize + wallThickness,
                 maze.Height * cellSize + wallThickness,
-                new L8(255));
+                new Rgb24(255, 255, 255));
             
-            var black = new L8(0);
+            var black = new Rgb24();
             var lastCellX = maze.Width * cellSize;
             var lastCellY = maze.Height * cellSize;
             var lastX = maze.Width - 1;
@@ -100,7 +100,19 @@ namespace KonsoleApp
                 BitDepth = PngBitDepth.Bit1
             };
 
-            image.SaveAsPng(path);
+            image.SaveAsPng("maze.original.png");
+
+            foreach (var position in edges.Keys)
+            {
+                image.PaintBox(
+                    position.X * cellSize + wallThickness,
+                    position.Y * cellSize + wallThickness,
+                    openSpace,
+                    openSpace,
+                    new Rgb24(255, 0, 0));
+            }
+
+            image.SaveAsPng("maze.nodes.png");
         }
         static void OutputMaze(Maze maze)
         {
@@ -211,15 +223,24 @@ namespace KonsoleApp
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var maze = new Maze(32);
+                var maze = new Maze(64);
                 var random = new Random();
                 RandomizeMaze(maze, random);
 
                 Console.WriteLine($"Generated {maze.Width}x{maze.Height} maze in {stopwatch.Elapsed}.");
 
+                stopwatch.Restart();
+                var edges = MazeGraph.Create(maze);
+
+                if (edges is not null)
+                {
+                    var word = edges.Count == 1 ? "edge" : "edges";
+                    Console.WriteLine($"Generated graph with {edges.Count} {word} in {stopwatch.Elapsed}.");
+                }
+
                 // OutputMaze(maze);
                 stopwatch.Restart();
-                GenerateImage(maze, 8, 24, "maze.png");
+                GenerateImages(maze, edges, 8, 24);
                 Console.WriteLine($"Generated image in {stopwatch.Elapsed}.");
             }
             catch (Exception ex)
