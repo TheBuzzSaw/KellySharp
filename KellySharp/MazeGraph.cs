@@ -5,50 +5,13 @@ namespace KellySharp
 {
     public class MazeGraph
     {
-        private static int CountExits(Maze maze, Point32 point)
-        {
-            return
-                Convert.ToInt32(maze.CanGoUp(point.X, point.Y)) +
-                Convert.ToInt32(maze.CanGoDown(point.X, point.Y)) +
-                Convert.ToInt32(maze.CanGoLeft(point.X, point.Y)) +
-                Convert.ToInt32(maze.CanGoRight(point.X, point.Y));
-        }
-
-        private static bool CanGo(Maze maze, Point32 point, int direction)
-        {
-            return direction switch
-            {
-                0 => maze.CanGoRight(point.X, point.Y),
-                1 => maze.CanGoDown(point.X, point.Y),
-                2 => maze.CanGoLeft(point.X, point.Y),
-                3 => maze.CanGoUp(point.X, point.Y),
-                _ => false
-            };
-        }
-
-        private static Point32 Offset(int direction)
-        {
-            return direction switch
-            {
-                0 => new Point32(1, 0),
-                1 => new Point32(0, 1),
-                2 => new Point32(-1, 0),
-                3 => new Point32(0, -1),
-                _ => new Point32()
-            };
-        }
-
-        private static int TurnLeft(int direction) => (direction + 3) & 3;
-        private static int TurnRight(int direction) => (direction + 1) & 3;
-        private static int TurnAround(int direction) => (direction + 2) & 3;
-
         public static Dictionary<Point32, MazeEdge[]>? Create(Maze maze)
         {
             var edgesByPosition = new Dictionary<Point32, MazeEdge[]>();
 
             var start = new Point32();
-            int direction = 0;
-            int exitCount = CountExits(maze, start);
+            var direction = default(MazeDirection);
+            int exitCount = maze.CountExitsAt(start);
 
             if (exitCount < 1)
             {
@@ -57,18 +20,18 @@ namespace KellySharp
 
             while (exitCount < 3)
             {
-                if (!CanGo(maze, start, direction))
+                if (!maze.CanGo(direction, start))
                 {
-                    if (CanGo(maze, start, TurnLeft(direction)))
-                        direction = TurnLeft(direction);
-                    else if (CanGo(maze, start, TurnRight(direction)))
-                        direction = TurnRight(direction);
+                    if (maze.CanGo(direction.TurnLeft(), start))
+                        direction = direction.TurnLeft();
+                    else if (maze.CanGo(direction.TurnRight(), start))
+                        direction = direction.TurnRight();
                     else
-                        direction = TurnAround(direction);
+                        direction = direction.TurnAround();
                 }
 
-                start += Offset(direction);
-                exitCount = CountExits(maze, start);
+                start += direction.AsOffset();
+                exitCount = maze.CountExitsAt(start);
             }
 
             var pending = new Stack<Point32>();
@@ -81,28 +44,24 @@ namespace KellySharp
 
                 for (int i = 0; i < 4; ++i)
                 {
-                    if (edges[i].Distance == 0 && CanGo(maze, position, i))
+                    direction = (MazeDirection)i;
+                    if (edges[i].Distance == 0 && maze.CanGo(direction, position))
                     {
-                        direction = i;
                         
                         int distance = 1;
-                        var explorer = position + Offset(direction);
-                        exitCount = CountExits(maze, explorer);
+                        var explorer = position + direction.AsOffset();
+                        exitCount = maze.CountExitsAt(explorer);
 
                         while (exitCount == 2)
                         {
-                            if (CanGo(maze, explorer, TurnLeft(direction)))
-                            {
-                                direction = TurnLeft(direction);
-                            }
-                            else if (CanGo(maze, explorer, TurnRight(direction)))
-                            {
-                                direction = TurnRight(direction);
-                            }
+                            if (maze.CanGo(direction.TurnLeft(), explorer))
+                                direction = direction.TurnLeft();
+                            else if (maze.CanGo(direction.TurnRight(), explorer))
+                                direction = direction.TurnRight();
 
                             ++distance;
-                            explorer += Offset(direction);
-                            exitCount = CountExits(maze, explorer);
+                            explorer += direction.AsOffset();
+                            exitCount = maze.CountExitsAt(explorer);
                         }
 
                         edges[i] = new MazeEdge(explorer, distance);
@@ -110,7 +69,7 @@ namespace KellySharp
                         if (2 < exitCount)
                         {
                             var explorerEdges = new MazeEdge[4];
-                            explorerEdges[TurnAround(direction)] = new MazeEdge(position, distance);
+                            explorerEdges[(int)direction.TurnAround()] = new MazeEdge(position, distance);
                             edgesByPosition.Add(explorer, explorerEdges);
                             pending.Push(explorer);
                         }
