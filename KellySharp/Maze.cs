@@ -40,7 +40,7 @@ namespace KellySharp
         }
 
         private int VerticalWallIndex(int x, int y) => _verticalWallWidth * y + x;
-        private int HorizontalWallIndex(int x, int y) => _verticalWallCount + _horizontalWallWidth * y + x;
+        private int HorizontalWallIndex(int x, int y) => _verticalWallCount + _horizontalWallHeight * x + y;
 
         public bool CanGoDown(int x, int y) => CanGoUp(x, y + 1);
         public bool CanGoUp(int x, int y)

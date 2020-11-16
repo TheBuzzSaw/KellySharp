@@ -43,6 +43,22 @@ namespace KellySharp
             };
         }
 
+        public static void SetWall(
+            this Maze maze,
+            Point32 position,
+            MazeDirection mazeDirection,
+            bool wall)
+        {
+            switch (mazeDirection)
+            {
+                case MazeDirection.Right: maze.SetWallRight(position.X, position.Y, wall); break;
+                case MazeDirection.Down: maze.SetWallDown(position.X, position.Y, wall); break;
+                case MazeDirection.Left: maze.SetWallLeft(position.X, position.Y, wall); break;
+                case MazeDirection.Up: maze.SetWallUp(position.X, position.Y, wall); break;
+                default: break;
+            }
+        }
+
         public static int CountExitsAt(this Maze maze, Point32 point)
         {
             return

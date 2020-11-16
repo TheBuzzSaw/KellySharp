@@ -216,6 +216,15 @@ namespace KonsoleApp
                     Visit(nextPosition.x, nextPosition.y);
                 }
             }
+
+            for (int i = 0; i < 256; ++i)
+            {
+                var p = new Point32(
+                    random.Next(1, maze.Width - 1),
+                    random.Next(1, maze.Height - 1));
+                var d = (MazeDirection)random.Next(4);
+                maze.SetWall(p, d, false);
+            }
         }
 
         static void Main(string[] args)

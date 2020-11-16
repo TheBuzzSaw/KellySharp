@@ -68,9 +68,13 @@ namespace KellySharp
 
                         if (2 < exitCount)
                         {
-                            var explorerEdges = new MazeEdge[4];
+                            if (!edgesByPosition.TryGetValue(explorer, out var explorerEdges))
+                            {
+                                explorerEdges = new MazeEdge[4];
+                                edgesByPosition.Add(explorer, explorerEdges);
+                            }
+
                             explorerEdges[(int)direction.TurnAround()] = new MazeEdge(position, distance);
-                            edgesByPosition.Add(explorer, explorerEdges);
                             pending.Push(explorer);
                         }
                     }
