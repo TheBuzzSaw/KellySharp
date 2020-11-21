@@ -229,28 +229,41 @@ namespace KonsoleApp
 
         static void Main(string[] args)
         {
+            /*
+            Sample output from 15 NOV 2020:
+
+            Generated 10000x10000 maze in 00:00:26.0584734.
+            Memory: 25069152
+            Generated graph with 9795985 edges in 00:00:27.5125985.
+            Memory: 1066351808
+            */
+
+            void ShowMemoryUsage() => Console.WriteLine("Memory: " + GC.GetTotalMemory(true));
             try
             {
                 var stopwatch = Stopwatch.StartNew();
-                var maze = new Maze(64);
+                var maze = new Maze(96, 32);
                 var random = new Random();
                 RandomizeMaze(maze, random);
 
                 Console.WriteLine($"Generated {maze.Width}x{maze.Height} maze in {stopwatch.Elapsed}.");
+                ShowMemoryUsage();
 
                 stopwatch.Restart();
                 var edges = MazeGraph.Create(maze);
 
                 if (edges is not null)
                 {
-                    var word = edges.Count == 1 ? "edge" : "edges";
+                    var word = edges.Count == 1 ? "node" : "nodes";
                     Console.WriteLine($"Generated graph with {edges.Count} {word} in {stopwatch.Elapsed}.");
                 }
+                ShowMemoryUsage();
 
                 // OutputMaze(maze);
                 stopwatch.Restart();
                 GenerateImages(maze, edges, 8, 24);
                 Console.WriteLine($"Generated image in {stopwatch.Elapsed}.");
+                ShowMemoryUsage();
             }
             catch (Exception ex)
             {
