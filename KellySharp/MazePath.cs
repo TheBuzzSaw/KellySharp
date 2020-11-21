@@ -4,10 +4,8 @@ namespace KellySharp
     {
         public static MazePath Create(
             Maze maze,
-            int startX,
-            int startY,
-            int finishX,
-            int finishY)
+            Point32 start,
+            Point32 finish)
         {
             
             return null;

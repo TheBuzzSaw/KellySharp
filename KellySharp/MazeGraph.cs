@@ -83,5 +83,12 @@ namespace KellySharp
 
             return edgesByPosition;
         }
+
+        private readonly Dictionary<MazeExit, (MazeExit exit, int distance)> _graph = new();
+        private readonly HashSet<Point32> _nodes = new();
+
+        private MazeGraph()
+        {
+        }
     }
 }
