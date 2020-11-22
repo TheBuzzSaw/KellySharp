@@ -44,7 +44,7 @@ namespace KellySharp
         {
             if (!dictionary.TryGetValue(key, out var value))
             {
-                value = valueFactory();
+                value = valueFactory.Invoke();
                 dictionary.Add(key, value);
             }
             else if (value is null)

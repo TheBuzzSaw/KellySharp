@@ -227,7 +227,7 @@ namespace KonsoleApp
             }
         }
 
-        static void Main(string[] args)
+        static void Main2(string[] args)
         {
             /*
             Sample output from 15 NOV 2020:
@@ -269,6 +269,31 @@ namespace KonsoleApp
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        static void Main(string[] args)
+        {
+            var sudoku = new SudokuGrid();
+            sudoku.TrySetValue(1, 0, 6);
+            sudoku.TrySetValue(2, 0, 8);
+            sudoku.TrySetValue(3, 0, 0);
+            sudoku.TrySetValue(4, 0, 2);
+            sudoku.TrySetValue(5, 0, 1);
+            sudoku.TrySetValue(7, 0, 7);
+            sudoku.TrySetValue(8, 0, 4);
+
+            sudoku.TrySetValue(1, 1, 5);
+            sudoku.TrySetValue(3, 1, 4);
+            sudoku.TrySetValue(4, 1, 8);
+            sudoku.TrySetValue(6, 1, 6);
+            sudoku.TrySetValue(0, 2, 4);
+            sudoku.TrySetValue(2, 2, 7);
+            sudoku.TrySetValue(3, 2, 6);
+            sudoku.TrySetValue(6, 2, 1);
+            sudoku.TrySetValue(7, 2, 0);
+
+            sudoku.TrySetValue(0, 8, 1);
+            sudoku.WriteToConsole();
         }
     }
 }
