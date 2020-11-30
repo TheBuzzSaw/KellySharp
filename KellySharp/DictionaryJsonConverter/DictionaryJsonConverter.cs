@@ -12,7 +12,7 @@ namespace KellySharp
     {
         public static Dictionary<TKey, TValue>? Read(
             ref Utf8JsonReader reader,
-            Converter<string, TKey> keyParser,
+            Converter<string?, TKey> keyParser,
             JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Null)
@@ -41,11 +41,11 @@ namespace KellySharp
             }
         }
 
-        private readonly Converter<string, TKey> _keyParser;
+        private readonly Converter<string?, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
 
         public DictionaryJsonConverter(
-            Converter<string, TKey> keyParser,
+            Converter<string?, TKey> keyParser,
             Converter<TKey, string> keySerializer)
         {
             _keyParser = keyParser;

@@ -31,13 +31,12 @@ namespace KellySharp
                 if (reader.TokenType == JsonTokenType.EndObject)
                     return result.ToImmutable();
 
-                var key = keyParser(reader.GetString());
+                var key = keyParser(reader.GetString() ?? string.Empty);
 
                 if (!reader.Read())
                     throw new JsonException("Incomplete JSON object");
 
                 var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
-
                 result.Add(key, value);
             }
         }

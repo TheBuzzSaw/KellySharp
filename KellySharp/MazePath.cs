@@ -10,7 +10,7 @@ namespace KellySharp
             int finishY)
         {
             
-            return null;
+            return new MazePath();
         }
     }
 }

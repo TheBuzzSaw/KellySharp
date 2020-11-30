@@ -10,11 +10,11 @@ namespace KellySharp
     public class IDictionaryJsonConverter<TKey, TValue> :
         JsonConverter<IDictionary<TKey, TValue>?> where TKey : notnull
     {
-        private readonly Converter<string, TKey> _keyParser;
+        private readonly Converter<string?, TKey> _keyParser;
         private readonly Converter<TKey, string> _keySerializer;
 
         public IDictionaryJsonConverter(
-            Converter<string, TKey> keyParser,
+            Converter<string?, TKey> keyParser,
             Converter<TKey, string> keySerializer)
         {
             _keyParser = keyParser;
