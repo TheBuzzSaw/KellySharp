@@ -7,7 +7,8 @@ namespace KellyBenchmark
     {
         static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<RotateBenchmark>();
+            // var summary = BenchmarkRunner.Run<RotateBenchmark>();
+            var summary = BenchmarkRunner.Run<SquareRootBenchmark>();
         }
     }
 }
