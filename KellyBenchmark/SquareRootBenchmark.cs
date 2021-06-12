@@ -22,12 +22,6 @@ namespace KellyBenchmark
         public int N { get; set; }
 
         [Benchmark(Baseline = true)]
-        public void SimpleSquareRoot()
-        {
-            _ = (int)Math.Sqrt(N);
-        }
-
-        [Benchmark]
         public void FloorSquareRoot()
         {
             _ = (int)Math.Floor(Math.Sqrt(N));
