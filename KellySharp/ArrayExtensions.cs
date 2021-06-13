@@ -66,16 +66,11 @@ namespace KellySharp
             while (leftCount < span.Length && predicate.Invoke(span[leftCount]))
                 ++leftCount;
 
-            int rightCount = 0;
+            int begin = leftCount;
             while (true)
             {
-                int begin = leftCount + rightCount;
-
                 while (begin < span.Length && !predicate.Invoke(span[begin]))
-                {
                     ++begin;
-                    ++rightCount;
-                }
                 
                 if (begin == span.Length)
                     break;
@@ -89,6 +84,7 @@ namespace KellySharp
                 int length = end - leftCount;
                 RotateRight(span.Slice(leftCount, length), matchCount);
                 leftCount += matchCount;
+                begin = end;
             }
 
             return leftCount;
