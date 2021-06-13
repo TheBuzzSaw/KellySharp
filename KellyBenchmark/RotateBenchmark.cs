@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using BenchmarkDotNet.Attributes;
+using KellySharp;
 
 namespace KellyBenchmark
 {
@@ -47,21 +48,29 @@ namespace KellyBenchmark
             }
         }
 
+        public static void RotateViaSwift<T>(Span<T> span, int k)
+        {
+            _ = span.RotateSwift(span.Length - k);
+        }
+
         public static IEnumerable<RotateInput> Values()
         {
             var mebi = 1 << 20;
 
             return new RotateInput[]
             {
-                new RotateInput(8, 1),
-                new RotateInput(8, 4),
-                new RotateInput(8, 7),
-                new RotateInput(2048, 1),
-                new RotateInput(2048, 1024),
-                new RotateInput(2048, 2047),
+                // new RotateInput(8, 1),
+                // new RotateInput(8, 4),
+                // new RotateInput(8, 7),
+                // new RotateInput(2048, 1),
+                // new RotateInput(2048, 1024),
+                // new RotateInput(2048, 2047),
                 new RotateInput(mebi, 1),
+                new RotateInput(mebi, mebi / 5),
+                new RotateInput(mebi, mebi / 4),
+                new RotateInput(mebi, mebi / 3),
                 new RotateInput(mebi, mebi / 2),
-                new RotateInput(mebi, mebi - 1)
+                // new RotateInput(mebi, mebi - 1)
             };
         }
         
@@ -82,22 +91,28 @@ namespace KellyBenchmark
                 _data[i] = random.Next();
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void BenchmarkReverse()
         {
             RotateViaReverse(_data.AsSpan(), Input.K);
         }
 
-        [Benchmark]
+        // [Benchmark]
         public void BenchmarkCycle()
         {
             RotateViaCycle(_data.AsSpan(), Input.K);
         }
 
-        [Benchmark]
+        // [Benchmark]
         public void BenchmarkBuffer()
         {
             RotateViaBuffer(_data.AsSpan(), Input.K);
+        }
+
+        [Benchmark]
+        public void BenchmarkSwift()
+        {
+            RotateViaSwift(_data.AsSpan(), Input.K);
         }
     }
 }

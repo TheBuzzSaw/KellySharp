@@ -41,6 +41,16 @@ namespace KellyTest
         }
 
         [Fact]
+        public void SwiftRotateWorks()
+        {
+            var expected = new int[] { 4, 5, 6, 7, 8, 9, 1, 2, 3 };
+            var actual = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var result = actual.AsSpan().RotateSwift(3);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void SafeOnEmpty()
         {
             default(Span<int>).StablePartition(_ => true);

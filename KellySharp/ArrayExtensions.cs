@@ -25,12 +25,63 @@ namespace KellySharp
                 while (start != current);
             }
         }
+
+        public static int RotateSwift<T>(this Span<T> span, int middle)
+        {
+            // https://github.com/apple/swift/blob/main/test/Prototypes/Algorithms.swift
+            // public mutating func rotate(shiftingToStart middle: Index) -> Index
+
+            var m = middle;
+            var s = 0;
+            var e = span.Length;
+
+            if (s == m)
+                return e;
+            if (m == e)
+                return s;
+            
+            var ret = e;
+
+            while (true)
+            {
+                var lhs = span[s..m];
+                var rhs = span[m..e];
+
+                int i = 0;
+
+                do
+                {
+                    var swapValue = lhs[i];
+                    lhs[i] = rhs[i];
+                    rhs[i++] = swapValue;
+                }
+                while (i < lhs.Length && i < rhs.Length);
+
+                var s1 = s + i;
+                var m1 = m + i;
+
+                if (m1 == e)
+                {
+                    if (ret == e)
+                        ret = s1;
+                    if (s1 == m)
+                        break;
+                }
+
+                s = s1;
+
+                if (s == m)
+                    m = m1;
+            }
+
+            return ret;
+        }
         
         public static void RotateRight<T>(this Span<T> span, int count)
         {
             span.Reverse();
-            span.Slice(0, count).Reverse();
-            span.Slice(count).Reverse();
+            span[..count].Reverse();
+            span[count..].Reverse();
         }
 
         public static void Rotate<T>(this Span<T> span, int count)
@@ -82,7 +133,9 @@ namespace KellySharp
                 
                 int matchCount = end - begin;
                 int length = end - leftCount;
-                RotateRight(span.Slice(leftCount, length), matchCount);
+                RotateRight(
+                    span.Slice(leftCount, length),
+                    matchCount);
                 leftCount += matchCount;
                 begin = end;
             }
