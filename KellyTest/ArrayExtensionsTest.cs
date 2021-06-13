@@ -17,7 +17,7 @@ namespace KellyTest
         }
 
         [Fact]
-        public void ShiftGroup()
+        public void StablePartitionWorks()
         {
             var expected = new int[] { 1, 2, 3, 4, 5, 6, 10, 11, 12, 13 };
             
@@ -26,6 +26,18 @@ namespace KellyTest
             
             Assert.Equal(6, count);
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void HalfStablePartitionWorks()
+        {
+            var values = new int[] { 1, 2, 3, 4, 5, 6, 10, 11, 12, 13 };
+            var count = values.AsSpan().HalfStablePartition(n => 10 < n);
+
+            Assert.Equal(3, count);
+            Assert.Equal(11, values[0]);
+            Assert.Equal(12, values[1]);
+            Assert.Equal(13, values[2]);
         }
 
         [Fact]

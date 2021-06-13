@@ -94,7 +94,7 @@ namespace KellySharp
             return leftCount;
         }
 
-        public static int HalfStablePartition<T>(Span<T> span, Predicate<T> predicate)
+        public static int HalfStablePartition<T>(this Span<T> span, Predicate<T> predicate)
         {
             int count = 0;
 
@@ -112,23 +112,6 @@ namespace KellySharp
             }
 
             return count;
-        }
-
-        public static T[] Without<T>(this T[] array, params T[] values)
-        {
-            Array.Sort(values);
-            var buffer = new T[array.Length];
-            int n = 0;
-
-            foreach (var item in array)
-            {
-                if (Array.BinarySearch(values, 0, values.Length, item) < 0)
-                    buffer[n++] = item;
-            }
-
-            var result = new T[n];
-            Array.Copy(buffer, result, n);
-            return result;
         }
     }
 }
