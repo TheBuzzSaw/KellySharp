@@ -37,7 +37,7 @@ namespace KellySharp
                     throw new JsonException("Incomplete JSON object");
 
                 var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
-                result.Add(key, value);
+                result.Add(key, value!);
             }
         }
 
