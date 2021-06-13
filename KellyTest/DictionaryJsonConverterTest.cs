@@ -33,7 +33,6 @@ namespace KellyTest
             // Verify that these custom tools are necessary!
             var instance = Activator.CreateInstance(type);
             Assert.NotNull(instance);
-            Assert.Throws<NotSupportedException>(() => JsonSerializer.Serialize(instance, type));
 
             var serialized = JsonSerializer.Serialize(instance, type, options);
             Assert.Equal("{}", serialized);
@@ -56,9 +55,6 @@ namespace KellyTest
 
             var options = new JsonSerializerOptions();
             options.Converters.Add(DictionaryJsonConverterFactory.Default);
-
-            // Verify that these custom tools are necessary!
-            Assert.Throws<NotSupportedException>(() => JsonSerializer.Serialize(dictionary));
             
             var serialized = JsonSerializer.Serialize(dictionary, options);
             var deserialized = JsonSerializer.Deserialize<Dictionary<string, Dictionary<Guid, int>>>(serialized, options);
@@ -76,9 +72,6 @@ namespace KellyTest
             
             var options = new JsonSerializerOptions();
             options.Converters.Add(DictionaryJsonConverterFactory.Default);
-
-            // Verify that these custom tools are necessary!
-            Assert.Throws<NotSupportedException>(() => JsonSerializer.Serialize(dictionary));
 
             var serialized = JsonSerializer.Serialize(dictionary, options);
             var deserialized = JsonSerializer.Deserialize<Dictionary<Guid, int>>(serialized, options);
@@ -100,9 +93,6 @@ namespace KellyTest
             
             var options = new JsonSerializerOptions();
             options.Converters.Add(factory);
-
-            // Verify that these custom tools are necessary!
-            Assert.Throws<NotSupportedException>(() => JsonSerializer.Serialize(dictionary));
 
             var serialized = JsonSerializer.Serialize(dictionary, options);
             var deserialized = JsonSerializer.Deserialize<Dictionary<int, int>>(serialized, options);

@@ -4,17 +4,6 @@ namespace KellySharp
 {
     public static class ArrayExtensions
     {
-        private static int FindIndex<T>(ReadOnlySpan<T> span, int startIndex, Predicate<T> predicate)
-        {
-            for (int i = startIndex; i < span.Length; ++i)
-            {
-                if (predicate.Invoke(span[i]))
-                    return i;
-            }
-
-            return -1;
-        }
-
         public static void RotateViaCycle<T>(this Span<T> span, int k)
         {
             int count = 0;
@@ -70,32 +59,59 @@ namespace KellySharp
             }
         }
         
-        public static void StablePartition<T>(this Span<T> span, Predicate<T> predicate)
+        public static int StablePartition<T>(this Span<T> span, Predicate<T> predicate)
         {
-            int lastIndex = span.Length - 1;
-            int baseIndex = 0;
+            int leftCount = 0;
 
-            // Skip initial values that already qualify.
-            while (baseIndex < lastIndex && predicate.Invoke(span[baseIndex]))
-                ++baseIndex;
+            while (leftCount < span.Length && predicate.Invoke(span[leftCount]))
+                ++leftCount;
 
-            while (baseIndex < lastIndex)
+            int rightCount = 0;
+            while (true)
             {
-                int begin = FindIndex(span, baseIndex, predicate); // Inclusive index
+                int begin = leftCount + rightCount;
+
+                while (begin < span.Length && !predicate.Invoke(span[begin]))
+                {
+                    ++begin;
+                    ++rightCount;
+                }
                 
-                if (begin == -1)
+                if (begin == span.Length)
                     break;
                 
-                int end = begin + 1; // Exclusive index
+                int end = begin + 1;
 
                 while (end < span.Length && predicate.Invoke(span[end]))
                     ++end;
                 
                 int matchCount = end - begin;
-                int length = end - baseIndex;
-                RotateRight(span.Slice(baseIndex, length), matchCount);
-                baseIndex += matchCount;
+                int length = end - leftCount;
+                RotateRight(span.Slice(leftCount, length), matchCount);
+                leftCount += matchCount;
             }
+
+            return leftCount;
+        }
+
+        public static int HalfStablePartition<T>(Span<T> span, Predicate<T> predicate)
+        {
+            int count = 0;
+
+            while (count < span.Length && predicate.Invoke(span[count]))
+                ++count;
+            
+            for (int i = count + 1; i < span.Length; ++i)
+            {
+                if (predicate.Invoke(span[i]))
+                {
+                    var swapValue = span[count];
+                    span[count++] = span[i];
+                    span[i] = swapValue;
+                }
+            }
+
+            return count;
         }
 
         public static T[] Without<T>(this T[] array, params T[] values)
