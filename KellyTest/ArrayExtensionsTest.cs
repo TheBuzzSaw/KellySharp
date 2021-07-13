@@ -75,16 +75,18 @@ namespace KellyTest
         [Fact]
         public void EnumerateSplit()
         {
+            var letters = "abcd";
             int count = 0;
-            foreach (var item in "aaa,bbb,ccc,ddd".EnumerateSplit(","))
+            var items = "aaa,bbb,,,,,ccc,ddd,,".EnumerateSplit(",", SplitEnumeration.SkipEmptyItems);
+            foreach (var item in items)
             {
-                ++count;
                 Assert.Equal(3, item.Length);
+                Assert.Equal(letters[count++], item[0]);
                 Assert.Equal(item[0], item[1]);
                 Assert.Equal(item[0], item[2]);
             }
 
-            Assert.Equal(4, count);
+            Assert.Equal(letters.Length, count);
         }
     }
 }

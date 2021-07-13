@@ -6,16 +6,21 @@ namespace KellySharp
     {
         private readonly ReadOnlySpan<T> _haystack;
         private readonly ReadOnlySpan<T> _needle;
+        private readonly SplitEnumeration _splitEnumeration;
         private int _start;
         private int _length;
         private int _next;
 
         public ReadOnlySpan<T> Current => _haystack.Slice(_start, _length);
 
-        public SplitEnumerator(ReadOnlySpan<T> haystack, ReadOnlySpan<T> needle)
+        public SplitEnumerator(
+            ReadOnlySpan<T> haystack,
+            ReadOnlySpan<T> needle,
+            SplitEnumeration splitEnumeration)
         {
             _haystack = haystack;
             _needle = needle;
+            _splitEnumeration = splitEnumeration;
             _start = 0;
             _length = 0;
             _next = 0;
@@ -23,8 +28,13 @@ namespace KellySharp
 
         public bool MoveNext()
         {
-            if (_next < _haystack.Length)
+            var skip = (_splitEnumeration & SplitEnumeration.SkipEmptyItems) == SplitEnumeration.SkipEmptyItems;
+            
+            do
             {
+                if (_haystack.Length <= _next)
+                    return false;
+                
                 _start = _next;
                 _length = _haystack.Slice(_start).IndexOf(_needle);
 
@@ -32,12 +42,10 @@ namespace KellySharp
                     _length = _haystack.Length - _start;
 
                 _next = _start + _length + _needle.Length;
-                return true;
             }
-            else
-            {
-                return false;
-            }
+            while (skip && Current.IsEmpty);
+
+            return true;
         }
     }
 }

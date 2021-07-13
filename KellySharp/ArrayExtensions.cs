@@ -163,9 +163,12 @@ namespace KellySharp
             return count;
         }
 
-        public static SplitEnumerable<T> EnumerateSplit<T>(this ReadOnlySpan<T> haystack, ReadOnlySpan<T> needle) where T : IEquatable<T>
+        public static SplitEnumerable<T> EnumerateSplit<T>(
+            this ReadOnlySpan<T> haystack,
+            ReadOnlySpan<T> needle,
+            SplitEnumeration splitEnumeration) where T : IEquatable<T>
         {
-            return new SplitEnumerable<T>(haystack, needle);
+            return new SplitEnumerable<T>(haystack, needle, splitEnumeration);
         }
     }
 }

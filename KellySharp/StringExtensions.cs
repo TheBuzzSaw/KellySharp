@@ -19,9 +19,12 @@ namespace KellySharp
             return new string(buffer, 0, n);
         }
 
-        public static SplitEnumerable<char> EnumerateSplit(this string haystack, ReadOnlySpan<char> needle)
+        public static SplitEnumerable<char> EnumerateSplit(
+            this string haystack,
+            ReadOnlySpan<char> needle,
+            SplitEnumeration splitEnumeration)
         {
-            return new SplitEnumerable<char>(haystack.AsSpan(), needle);
+            return new SplitEnumerable<char>(haystack, needle, splitEnumeration);
         }
     }
 }
