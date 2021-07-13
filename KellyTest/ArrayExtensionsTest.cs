@@ -71,5 +71,20 @@ namespace KellyTest
 
             Assert.Equal(firstArray, secondArray);
         }
+
+        [Fact]
+        public void EnumerateSplit()
+        {
+            int count = 0;
+            foreach (var item in "aaa,bbb,ccc,ddd".EnumerateSplit(","))
+            {
+                ++count;
+                Assert.Equal(3, item.Length);
+                Assert.Equal(item[0], item[1]);
+                Assert.Equal(item[0], item[2]);
+            }
+
+            Assert.Equal(4, count);
+        }
     }
 }
