@@ -257,6 +257,10 @@ namespace KonsoleApp
                     var word = edges.Count == 1 ? "node" : "nodes";
                     Console.WriteLine($"Generated graph with {edges.Count} {word} in {stopwatch.Elapsed}.");
                 }
+                else
+                {
+                    return;
+                }
                 ShowMemoryUsage();
 
                 // OutputMaze(maze);
@@ -271,7 +275,7 @@ namespace KonsoleApp
             }
         }
 
-        static void Main(string[] args)
+        static void Main3(string[] args)
         {
             var sudoku = new SudokuGrid();
             sudoku.TrySetValue(1, 0, 6);
@@ -294,6 +298,31 @@ namespace KonsoleApp
 
             sudoku.TrySetValue(0, 8, 1);
             sudoku.WriteToConsole();
+        }
+
+        static void Main(string[] args)
+        {
+            var builder = new RangeSetBuilder();
+            while (true)
+            {
+                Console.Write("LOW: ");
+                var lowText = Console.ReadLine();
+
+                if (!int.TryParse(lowText, out var low))
+                    break;
+                
+                Console.Write("HIGH: ");
+                var highText = Console.ReadLine();
+
+                if (!int.TryParse(highText, out var high))
+                    break;
+                
+                builder.AddRange(low, high);
+                
+                Console.WriteLine(builder);
+            }
+
+            Console.WriteLine(builder);
         }
     }
 }
