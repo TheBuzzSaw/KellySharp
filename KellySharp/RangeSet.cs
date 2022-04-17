@@ -8,6 +8,40 @@ namespace KellySharp;
 
 public readonly struct RangeSet : IEquatable<RangeSet>
 {
+    private static void Validate(ReadOnlySpan<int> values)
+    {
+        if ((values.Length & 1) == 1)
+            throw new InvalidOperationException("Range set requires even number of values.");
+        
+        for (int i = 1; i < values.Length; ++i)
+        {
+            if (values[i] <= values[i - 1])
+                throw new InvalidOperationException("Range values must be in ascending order.");
+        }
+    }
+
+    public static RangeSet Create(params int[] values)
+    {
+        if (values is null)
+            return default;
+        
+        Validate(values);
+
+        var ranges = ImmutableArray.Create(values);
+        return new RangeSet(ranges);
+    }
+
+    public static RangeSet Create(ReadOnlySpan<int> values)
+    {
+        Validate(values);
+        var builder = ImmutableArray.CreateBuilder<int>(values.Length);
+
+        foreach (var value in values)
+            builder.Add(value);
+        
+        return new RangeSet(builder.MoveToImmutable());
+    }
+
     private readonly ImmutableArray<int> _ranges;
 
     internal RangeSet(ImmutableArray<int> ranges) => _ranges = ranges;

@@ -11,6 +11,13 @@ public class RangeSetBuilder
 
     private readonly List<int> _ranges = new();
 
+    public bool Contains(int value)
+    {
+        var span = CollectionsMarshal.AsSpan(_ranges);
+        var index = Bisect.Right(span, value);
+        return (index & 1) == 1;
+    }
+
     public RangeSetBuilder AddRange(int low, int high)
     {
         if (high <= low)
