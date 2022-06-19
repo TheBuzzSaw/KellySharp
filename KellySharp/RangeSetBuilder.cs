@@ -8,6 +8,7 @@ namespace KellySharp;
 public class RangeSetBuilder
 {
     private static bool IsEven(int n) => (n & 1) == 0;
+    private static bool IsOdd(int n) => (n & 1) == 1;
 
     private readonly List<int> _ranges = new();
 
@@ -15,7 +16,7 @@ public class RangeSetBuilder
     {
         var span = CollectionsMarshal.AsSpan(_ranges);
         var index = Bisect.Right(span, value);
-        return (index & 1) == 1;
+        return IsOdd(index);
     }
 
     public RangeSetBuilder AddRange(int low, int high)

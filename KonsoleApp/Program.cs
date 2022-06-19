@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using KellySharp;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Bmp;
@@ -300,7 +301,7 @@ namespace KonsoleApp
             sudoku.WriteToConsole();
         }
 
-        static void Main(string[] args)
+        static void Main4(string[] args)
         {
             var builder = new RangeSetBuilder();
             while (true)
@@ -323,6 +324,23 @@ namespace KonsoleApp
             }
 
             Console.WriteLine(builder);
+        }
+
+        static async Task ProcessAsync(int value)
+        {
+            Console.WriteLine($"{DateTime.Now} - Starting {value}");
+            await Task.Delay(value);
+            Console.WriteLine($"{DateTime.Now} - Ending {value}");
+        }
+
+        static async Task Main(string[] args)
+        {
+            var values = new int[16];
+
+            for (int i = 0; i < values.Length; ++i)
+                values[i] = 1000 + i * 10;
+            
+            await Async.ChunkAsync(4, values, ProcessAsync);
         }
     }
 }
