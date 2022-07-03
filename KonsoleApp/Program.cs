@@ -333,7 +333,7 @@ namespace KonsoleApp
             Console.WriteLine($"{DateTime.Now} - Ending {value}");
         }
 
-        static async Task Main(string[] args)
+        static async Task Main5(string[] args)
         {
             var values = new int[16];
 
@@ -341,6 +341,22 @@ namespace KonsoleApp
                 values[i] = 1000 + i * 10;
             
             await Async.ChunkAsync(4, values, ProcessAsync);
+        }
+
+        static void Main(string[] args)
+        {
+            var boxes = PrisonerRiddle.PrepareBoxes(100, Random.Shared);
+            var simplePrisoner = new SimplePrisoner();
+            var preparedPrisoner = new PreparedPrisoner();
+            for (int i = 0; i < 32; ++i)
+            {
+                FisherYates.Shuffle(8, boxes, Random.Shared);
+                var simpleResult = PrisonerRiddle.CountSuccessfulPrisoners(boxes, simplePrisoner);
+                var preparedResult = PrisonerRiddle.CountSuccessfulPrisoners(boxes, preparedPrisoner);
+
+                Console.WriteLine("Simple prisoners: " + simpleResult);
+                Console.WriteLine("Prepared prisoners: " + preparedResult);
+            }
         }
     }
 }
