@@ -3,7 +3,7 @@ namespace KellySharp;
 public enum ChessPieceType
 {
     None,
-    PKing,
+    King,
     Queen,
     Bishop,
     Knight,

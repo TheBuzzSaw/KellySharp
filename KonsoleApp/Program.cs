@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using KellySharp;
 using SixLabors.ImageSharp;
@@ -11,6 +12,9 @@ using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace KonsoleApp;
+
+#pragma warning disable IDE0051
+#pragma warning disable IDE0060
 
 class Program
 {
@@ -360,9 +364,19 @@ class Program
         }
     }
 
+    static void ChessNonsense(string[] args)
+    {
+        var piece = ChessPiece.Create(ChessPieceType.Queen, true);
+        Console.WriteLine(piece.ToString());
+        var board = new ChessBoard();
+        var builder = new StringBuilder();
+        board.AppendTo(builder);
+        Console.WriteLine(builder);
+    }
+
     const string EntryPointEnvVar = "KellySharpEntry";
 
-    static async Task Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
         try
         {
@@ -371,7 +385,7 @@ class Program
             if (entryPoint is null)
             {
                 Console.WriteLine($"Set {EntryPointEnvVar} env var to target method.");
-                return;
+                return 1;
             }
 
             var methodInfo = typeof(Program).GetMethod(entryPoint, BindingFlags.Static | BindingFlags.NonPublic);
@@ -379,13 +393,21 @@ class Program
             if (methodInfo is null)
             {
                 Console.WriteLine("Failed to locate method: " + entryPoint);
-                return;
+                return 1;
             }
 
             var result = methodInfo.Invoke(null, new object[] { args });
 
-            if (result is Task task)
+            if (result is Task<int> taskWithResult)
+            {
+                return await taskWithResult;
+            }
+            else if (result is Task task)
+            {
                 await task;
+            }
+            
+            return 0;
         }
         catch (Exception ex)
         {
@@ -393,6 +415,10 @@ class Program
             Console.WriteLine();
             Console.WriteLine(ex);
             Console.WriteLine();
+            return 1;
         }
     }
 }
+
+#pragma warning restore IDE0051
+#pragma warning restore IDE0060

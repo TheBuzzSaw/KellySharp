@@ -23,7 +23,22 @@ public readonly struct ChessPiece : IEquatable<ChessPiece>
         if (Type == ChessPieceType.None)
             return "";
 
-        var color = IsWhite ? "White " : "Black ";
-        return color + Type.ToString();
+        var color = IsWhite ? "white " : "black ";
+        return color + Type.ToString().ToLowerInvariant();
     }
+
+    public static ChessPiece Create(ChessPieceType type, bool isBlack)
+    {
+        if (type == ChessPieceType.None)
+            return default;
+        
+        var mask = isBlack ? 1 << 3 : 0;
+        return new ChessPiece(mask | (int)type);
+    }
+
+    internal static readonly ChessPiece WhitePawn = ChessPiece.Create(ChessPieceType.Pawn, false);
+    internal static readonly ChessPiece BlackPawn = ChessPiece.Create(ChessPieceType.Pawn, true);
+
+    public static bool operator ==(ChessPiece left, ChessPiece right) => left.Equals(right);
+    public static bool operator !=(ChessPiece left, ChessPiece right) => !left.Equals(right);
 }
