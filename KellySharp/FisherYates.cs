@@ -11,9 +11,7 @@ public static class FisherYates
         for (int i = 0; i < last; ++i)
         {
             var swapIndex = random.Next(i, items.Length);
-            var swapValue = items[i];
-            items[i] = items[swapIndex];
-            items[swapIndex] = swapValue;
+            (items[swapIndex], items[i]) = (items[i], items[swapIndex]);
         }
     }
 
