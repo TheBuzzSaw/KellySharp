@@ -5,69 +5,81 @@ namespace KellySharp;
 
 public class ChessBoard
 {
-    private static void Validate(int x, int y)
+    private static readonly ChessPieceType[] DefaultRow =
+        new ChessPieceType[]
+        {
+            ChessPieceType.Rook,
+            ChessPieceType.Knight,
+            ChessPieceType.Bishop,
+            ChessPieceType.Queen,
+            ChessPieceType.King,
+            ChessPieceType.Bishop,
+            ChessPieceType.Knight,
+            ChessPieceType.Rook
+        };
+    
+    private static readonly int[] DefaultBoard = new int[]
+    {
+        MakeDefaultRow(true),
+        MakePawnRow(true),
+        0,
+        0,
+        0,
+        0,
+        MakePawnRow(false),
+        MakeDefaultRow(false)
+    };
+    private static void Validate(int x)
     {
         if (x < 0 || 7 < x)
             throw new ArgumentOutOfRangeException(nameof(x));
-        
-        if (y < 0 || 7 < y)
-            throw new ArgumentOutOfRangeException(nameof(y));
     }
-    private static int Index(int x, int y) => y * 8 + x;
-    private static int OuterIndex(int index) => index >> 1;
-    private static int Offset(int index) => (index & 1) * 4;
-    private static byte Combine(ChessPiece first, ChessPiece second)
+
+    private static int MakeDefaultRow(bool isBlack)
     {
-        return (byte)(first.Data | (second.Data << 4));
+        int result = 0;
+        for (int i = 0; i < DefaultRow.Length; ++i)
+        {
+            var chessPiece = ChessPiece.Create(DefaultRow[i], isBlack);
+            result |= chessPiece.Data << (i * 4);
+        }
+        return result;
     }
-    private static void SetDefaults(Span<byte> row, bool isBlack)
+
+    private static int MakePawnRow(bool isBlack)
     {
-        row[0] = Combine(
-            ChessPiece.Create(ChessPieceType.Rook, isBlack),
-            ChessPiece.Create(ChessPieceType.Knight, isBlack));
-        row[1] = Combine(
-            ChessPiece.Create(ChessPieceType.Bishop, isBlack),
-            ChessPiece.Create(ChessPieceType.Queen, isBlack));
-        row[2] = Combine(
-            ChessPiece.Create(ChessPieceType.King, isBlack),
-            ChessPiece.Create(ChessPieceType.Bishop, isBlack));
-        row[3] = Combine(
-            ChessPiece.Create(ChessPieceType.Knight, isBlack),
-            ChessPiece.Create(ChessPieceType.Rook, isBlack));
+        var chessPiece = ChessPiece.Create(ChessPieceType.Pawn, isBlack);
+        int result = 0;
+        for (int i = 0; i < 8; ++i)
+        {
+            result |= chessPiece.Data << (i * 4);
+        }
+        return result;
     }
-    private static readonly byte WhitePawns = Combine(ChessPiece.WhitePawn, ChessPiece.WhitePawn);
-    private static readonly byte BlackPawns = Combine(ChessPiece.BlackPawn, ChessPiece.BlackPawn);
-    private readonly byte[] _data = new byte[32];
+    private readonly int[] _rows = new int[8];
 
     public ChessPiece this[int x, int y]
     {
         get
         {
-            Validate(x, y);
-            var index = Index(x, y);
-            var outerIndex = OuterIndex(index);
-            var offset = Offset(index);
-            var data = (_data[outerIndex] >> offset) & 0xf;
+            Validate(x);
+            var offset = x * 4;
+            var data = (_rows[y] >> offset) & 0xf;
             return new ChessPiece(data);
         }
 
         set
         {
-            Validate(x, y);
-            var index = Index(x, y);
-            var outerIndex = OuterIndex(index);
-            var offset = Offset(index);
+            Validate(x);
+            var offset = x * 4;
             var mask = ~(0xf << offset);
-            _data[outerIndex] = (byte)((_data[outerIndex] & mask) | (value.Data << offset));
+            _rows[y] = (_rows[y] & mask) | (value.Data << offset);
         }
     }
 
     public ChessBoard()
     {
-        SetDefaults(_data, true);
-        _data.AsSpan(4, 4).Fill(BlackPawns);
-        _data.AsSpan(24, 4).Fill(WhitePawns);
-        SetDefaults(_data.AsSpan(28), false);
+        DefaultBoard.AsSpan().CopyTo(_rows);
     }
 
     private static void AppendTo(StringBuilder builder, ChessPiece chessPiece)
@@ -95,16 +107,27 @@ public class ChessBoard
 
     public void AppendTo(StringBuilder builder)
     {
-        for (int i = 0; i < _data.Length; ++i)
-        {
-            var b = _data[i];
-            var pieceA = new ChessPiece(b & 0xf);
-            var pieceB = new ChessPiece((b >> 4) & 0xf);
-            AppendTo(builder, pieceA);
-            AppendTo(builder, pieceB);
+        for (int i = 0; i < 8; ++i)
+            builder.Append("   ").Append((char)('A' + i));
 
-            if ((i & 3) == 3)
-                builder.AppendLine();
+        builder.AppendLine();
+        var rowName = '8';
+        foreach (var row in _rows)
+        {
+            builder.Append(rowName).Append(' ');
+            for (int x = 0; x < 8; ++x)
+            {
+                var data = (row >> (x * 4)) & 0xf;
+                var chessPiece = new ChessPiece(data);
+                AppendTo(builder, chessPiece);
+            }
+
+            builder.Append(' ').Append(rowName--).AppendLine();
         }
+
+        for (int i = 0; i < 8; ++i)
+            builder.Append("   ").Append((char)('A' + i));
+        
+        builder.AppendLine();
     }
 } 

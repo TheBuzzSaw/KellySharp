@@ -36,9 +36,6 @@ public readonly struct ChessPiece : IEquatable<ChessPiece>
         return new ChessPiece(mask | (int)type);
     }
 
-    internal static readonly ChessPiece WhitePawn = ChessPiece.Create(ChessPieceType.Pawn, false);
-    internal static readonly ChessPiece BlackPawn = ChessPiece.Create(ChessPieceType.Pawn, true);
-
     public static bool operator ==(ChessPiece left, ChessPiece right) => left.Equals(right);
     public static bool operator !=(ChessPiece left, ChessPiece right) => !left.Equals(right);
 }
