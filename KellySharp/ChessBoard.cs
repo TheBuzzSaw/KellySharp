@@ -29,11 +29,6 @@ public class ChessBoard
         MakePawnRow(false),
         MakeDefaultRow(false)
     };
-    private static void Validate(int x)
-    {
-        if (x < 0 || 7 < x)
-            throw new ArgumentOutOfRangeException(nameof(x));
-    }
 
     private static int MakeDefaultRow(bool isBlack)
     {
@@ -60,20 +55,24 @@ public class ChessBoard
 
     public ChessPiece this[int x, int y]
     {
+        get => this[new ChessPosition(x, y)];
+        set => this[new ChessPosition(x, y)] = value;
+    }
+
+    public ChessPiece this[ChessPosition position]
+    {
         get
         {
-            Validate(x);
-            var offset = x * 4;
-            var data = (_rows[y] >> offset) & 0xf;
+            var offset = position.X * 4;
+            var data = (_rows[position.Y] >> offset) & 0xf;
             return new ChessPiece(data);
         }
 
         set
         {
-            Validate(x);
-            var offset = x * 4;
+            var offset = position.X * 4;
             var mask = ~(0xf << offset);
-            _rows[y] = (_rows[y] & mask) | (value.Data << offset);
+            _rows[position.Y] = (_rows[position.Y] & mask) | (value.Data << offset);
         }
     }
 
@@ -129,5 +128,12 @@ public class ChessBoard
             builder.Append("   ").Append((char)('A' + i));
         
         builder.AppendLine();
+    }
+
+    public string GetFullBoard()
+    {
+        var builder = new StringBuilder(400);
+        AppendTo(builder);
+        return builder.ToString();
     }
 } 

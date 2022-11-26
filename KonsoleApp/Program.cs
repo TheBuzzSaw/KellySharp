@@ -369,9 +369,14 @@ class Program
         var piece = ChessPiece.Create(ChessPieceType.Queen, true);
         Console.WriteLine(piece.ToString());
         var board = new ChessBoard();
-        var builder = new StringBuilder();
-        board.AppendTo(builder);
-        Console.WriteLine(builder);
+        Console.WriteLine(board.GetFullBoard());
+        board[2, 2] = ChessPiece.Create(ChessPieceType.Queen, false);
+        Console.WriteLine(board.GetFullBoard());
+
+        Console.WriteLine(new ChessPosition().ToString());
+        Console.WriteLine(new ChessPosition(2, 2).ToString());
+        Console.WriteLine(new ChessPosition(7, 7).ToString());
+        Console.WriteLine(new ChessMove().ToString());
     }
 
     const string EntryPointEnvVar = "KellySharpEntry";
