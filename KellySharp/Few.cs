@@ -8,20 +8,22 @@ namespace KellySharp;
 
 public readonly struct Few<T> : IEquatable<Few<T>>
 {
-    public readonly ImmutableArray<T> Items { get; }
+    private readonly ImmutableArray<T> _items;
 
-    public Few(ImmutableArray<T> items) => Items = items.IsDefaultOrEmpty ? default : items;
-    public bool Equals(Few<T> other) => Items.IsDefault ? other.Items.IsDefault : Items.SequenceEqual(other.Items);
+    public readonly ImmutableArray<T> Items => _items.IsDefault ? ImmutableArray<T>.Empty : _items;
+
+    public Few(ImmutableArray<T> items) => _items = items;
+    public bool Equals(Few<T> other) => Items.SequenceEqual(other.Items);
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is Few<T> other && Equals(other);
     
     public override int GetHashCode()
     {
-        if (Items.IsDefault)
+        if (_items.IsDefaultOrEmpty)
             return 0;
         
         var hashCode = new HashCode();
 
-        foreach (var item in Items)
+        foreach (var item in _items)
             hashCode.Add(item);
 
         var result = hashCode.ToHashCode();
@@ -30,7 +32,7 @@ public readonly struct Few<T> : IEquatable<Few<T>>
 
     public override string? ToString()
     {
-        if (Items.IsDefault)
+        if (_items.IsDefaultOrEmpty)
             return "[]";
         
         var builder = new StringBuilder("[").Append(Items[0]?.ToString());
