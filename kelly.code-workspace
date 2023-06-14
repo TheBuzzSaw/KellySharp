@@ -16,5 +16,7 @@
 			"path": "KellyTools"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"dotnet.defaultSolution": "/home/kelly/Documents/Code/KellySharp/KonsoleApp/KonsoleApp.sln"
+	}
 }
